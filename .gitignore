@@ -1,0 +1,5 @@
+grammar.md
+src/test.txt
+*.o
+src/main
+.vscode
