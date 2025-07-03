@@ -12,7 +12,7 @@ class VariableNode : public BaseAST {
     string name;
 public:
     VariableNode(string);
-    Value* codegen() override;
+    Value* codegen(Compiler&) override;
     void print() override;
     int result() override;
 };

@@ -4,7 +4,7 @@
 
 VariableNode::VariableNode(string _name): name(_name) {};
 
-Value* VariableNode::codegen() {
+Value* VariableNode::codegen(Compiler&) {
     return nullptr;
 };
 

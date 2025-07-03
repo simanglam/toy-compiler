@@ -1,20 +1,26 @@
 #ifndef __Compiler_Header__
 #define __Compiler_Header__
+class Compiler;
 
-#include <llvm/IR/IRBuilder.h>
-#include <llvm/IR/LLVMContext.h>
-#include <llvm/IR/Module.h>
+#include <map>
 #include <llvm/IR/Value.h>
+#include <llvm/IR/Module.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/IRBuilder.h>
+#include <Parser.h>
 
 using namespace llvm;
 
 class Compiler {
+    Parser& p;
 public:
-    static std::unique_ptr<LLVMContext> TheContext;
-    static std::unique_ptr<Module> TheModule;
-    static std::unique_ptr<IRBuilder<>> Builder;
-    static std::map<std::string, Value *> NamedValues;
+    std::unique_ptr<llvm::LLVMContext> TheContext;
+    std::unique_ptr<llvm::Module> TheModule;
+    std::unique_ptr<IRBuilder<>> Builder;
+    std::map<std::string, Value *> NamedValues;
 
-}
+    Compiler(Parser&);
+    ~Compiler();
+};
 
 #endif

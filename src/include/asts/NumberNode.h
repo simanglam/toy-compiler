@@ -10,7 +10,7 @@ class NumberNode : public BaseAST {
     int val;
 public:
     NumberNode(int);
-    Value* codegen() override;
+    Value* codegen(Compiler&) override;
     void print() override;
     int result() override;
 };

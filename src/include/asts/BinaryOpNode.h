@@ -11,7 +11,7 @@ public:
     BinaryOpNode(BaseAST*, char, BaseAST*);
     ~BinaryOpNode();
     void print() override;
-    Value* codegen() override;
+    Value* codegen(Compiler&) override;
     int result() override;
 };
 

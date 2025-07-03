@@ -1,6 +1,8 @@
 #ifndef __PAESER_HEADER__
 #define __PAESER_HEADER__
 
+class Parser;
+
 #include "Token.h" 
 #include "Scanner.h"
 #include "asts/BaseAST.h"
