@@ -2,7 +2,7 @@
 
 Compiler::Compiler(Parser& _p): p(_p) {
     TheContext = std::make_unique<llvm::LLVMContext>();
-    TheModule = std::make_unique<Module>("my cool jit", *TheContext);
+    TheModule = std::make_unique<Module>("test.txt", *TheContext);
     Builder = std::make_unique<IRBuilder<>>(*TheContext);
 }
 
