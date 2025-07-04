@@ -12,7 +12,7 @@ main: $(EXE)
 .PHONY: asts
 
 %.o: %.cpp
-	g++ `llvm-config --cxxflags --ldflags --system-libs --libs core native` $(includePath) -c -o $@ $<
+	g++ `llvm-config --cxxflags` $(includePath) -c -o $@ $<
 
 clean:
 	rm *.o
