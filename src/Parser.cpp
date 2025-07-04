@@ -84,11 +84,9 @@ BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
     while (s.currentToken.type != TOK_OP_RIGHTPAR){
         s.getToken();
         DeclearNode* arg = parseFunctionDeclear();
-        if (!arg) return nullptr;
-        args.push_back(arg);
+        if (arg) args.push_back(arg);
     }
     if (s.getToken().type == TOK_SEMI){
-        s.getToken();
         return new PrototypeAST(name, args, returnType);
     }
     if (s.currentToken.type != TOK_CUR_LEFT){ 
@@ -100,6 +98,7 @@ BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
 
 DeclearNode* Parser::parseFunctionDeclear() {
     TOKENS type = s.currentToken.type;
+    if (type == TOK_OP_RIGHTPAR) return nullptr;
     if (type != TOK_TYPE_INT && type != TOK_TYPE_DOUBLE) {
         cerr << "Not correct" << endl;
         cerr << s.currentToken.strLiteral << endl;
@@ -111,7 +110,7 @@ DeclearNode* Parser::parseFunctionDeclear() {
         s.getToken();
         return node;
     }
-    else if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_LEFTPAR) {
+    else if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
         return new DeclearNode("", type);
     }
     return nullptr;
