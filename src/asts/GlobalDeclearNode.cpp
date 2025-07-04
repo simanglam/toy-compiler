@@ -27,6 +27,7 @@ Value* GlobalDeclearNode::codegen(Compiler& c) {
             type = llvm::Type::getDoubleTy(*c.TheContext);
             val = llvm::ConstantFP::get(type, dVal);
             break;
+        default: break;
     }
     llvm::GlobalVariable *gVar = new llvm::GlobalVariable(
         *c.TheModule,

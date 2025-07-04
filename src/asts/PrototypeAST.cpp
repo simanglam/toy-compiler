@@ -38,12 +38,11 @@ Function* PrototypeAST::codegen(Compiler& c) {
         case TOK_TYPE_DOUBLE:
             returnType = llvm::Type::getDoubleTy(*c.TheContext);
            break;
+        default: break;
     }
 
     FunctionType* FT = FunctionType::get(returnType, false);
     Function* F = Function::Create(FT, GlobalValue::ExternalLinkage, llvm::Twine(name), c.TheModule.get());
     int Idx = 0;
-    for (auto &Arg : F->args())
-        Arg.setName(this->args[Idx++]->getName());
     return F;
 }
