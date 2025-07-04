@@ -25,6 +25,7 @@ private:
     DeclearNode* parseDeclear();
     BlockNode* parseBlock();
     BaseExpr* parseReturn();
+    DeclearNode* parseFunctionDeclear();
 
 public:
     Parser(Scanner&);

@@ -21,6 +21,8 @@ public:
     std::map<std::string, llvm::GlobalVariable*> globalVar;
     Function* currentFunction;
 
+    AllocaInst* allocateVar(llvm::Type*, string&);
+
     Compiler(Parser&);
     ~Compiler();
 };

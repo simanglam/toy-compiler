@@ -18,13 +18,28 @@ Function* FunctionAST::codegen(Compiler& c) {
 
     if (!F) F = proto->codegen(c);
     if (!F) return nullptr;
-    cout << F->empty() << endl;
     if (!F->empty()) return nullptr;
 
     c.currentFunction = F;
-
     BasicBlock* BB = BasicBlock::Create(*c.TheContext, "entry", F);
     c.Builder->SetInsertPoint(BB);
+    
+    vector<DeclearNode*>& argNames = proto->getArgs();
+
+    unsigned idx = 0;
+
+    for (auto& arg : F->args()) {
+        std::string& argName = argNames[idx++]->getName();
+        arg.setName(argName);
+    }
+
+    for (auto& Arg : F->args()) {
+        string name = string(Arg.getName());
+        AllocaInst *Alloca = c.allocateVar(Arg.getType(), name);
+        c.Builder->CreateStore(&Arg, Alloca);
+        c.localVariables[name] = Alloca;
+  }
     body->codegen(c);
+
     return F;
 }

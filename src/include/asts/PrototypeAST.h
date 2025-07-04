@@ -20,6 +20,7 @@ public:
     ~PrototypeAST();
     Function* codegen(Compiler&) override;
     string getName();
+    vector<DeclearNode*>& getArgs();
 };
 
 #endif

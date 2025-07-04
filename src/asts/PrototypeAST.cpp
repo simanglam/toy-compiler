@@ -11,8 +11,12 @@ string PrototypeAST::getName() {
     return name;
 }
 
+vector<DeclearNode*>& PrototypeAST::getArgs() {
+    return args;
+}
+
 Function* PrototypeAST::codegen(Compiler& c) {
-    vector<llvm::Type*> Args(args.size());
+    vector<llvm::Type*> Args;
 
     for (DeclearNode* node : args) {
         llvm::Type* type;
@@ -41,8 +45,7 @@ Function* PrototypeAST::codegen(Compiler& c) {
         default: break;
     }
 
-    FunctionType* FT = FunctionType::get(returnType, false);
+    FunctionType* FT = FunctionType::get(returnType, Args, false);
     Function* F = Function::Create(FT, GlobalValue::ExternalLinkage, llvm::Twine(name), c.TheModule.get());
-    int Idx = 0;
     return F;
 }
