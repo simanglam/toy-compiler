@@ -92,6 +92,12 @@ Token Scanner::getToken(){
             currentChar = nextChar;
             file >> nextChar;
             break;
+        case ',':
+            nextToken.type = TOK_COMMA;
+            nextToken.strLiteral = ",";
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
         default:
             string buffString("");
             if (isNum(currentChar)){
@@ -122,6 +128,12 @@ Token Scanner::getToken(){
                 cerr << "Unknow Token: " << nextToken.strLiteral << endl;
             }
     }
+
+    if (nextToken.strLiteral == "int")
+        nextToken.type = TOK_TYPE_INT;
+    else if (nextToken.strLiteral == "double")
+        nextToken.type = TOK_TYPE_DOUBLE;
+
     return currentToken;
 }
 
