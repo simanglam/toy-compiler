@@ -23,7 +23,7 @@ private:
     DeclearNode* parseDeclear();
     BaseExpr* parseBinOpRhs(int, BaseExpr*);
     BaseExpr* parseFunction(string, TOKENS);
-    // BlockNode* parseBlockNode();
+    BlockNode* parseBlock();
 
 public:
     Parser(Scanner&);

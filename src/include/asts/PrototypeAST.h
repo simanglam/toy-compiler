@@ -18,6 +18,7 @@ class PrototypeAST: public BaseExpr {
 public:
     PrototypeAST(string, vector<DeclearNode*>, TOKENS);
     Function* codegen(Compiler&) override;
+    string getName();
 };
 
 #endif

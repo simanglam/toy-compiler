@@ -14,7 +14,6 @@ Value* GlobalDeclearNode::codegen(Compiler& c) {
     llvm::Type* type;
     llvm::Constant* val;
     
-
     switch (this->type) {
         case TOK_TYPE_INT:
             type = llvm::Type::getInt32Ty(*c.TheContext);
@@ -33,5 +32,5 @@ Value* GlobalDeclearNode::codegen(Compiler& c) {
         val,
         llvm::Twine(id.c_str())
     );
-    return gVar;
+    return val;
 }

@@ -98,6 +98,18 @@ Token Scanner::getToken(){
             currentChar = nextChar;
             file >> nextChar;
             break;
+        case '{':
+            nextToken.type = TOK_CUR_LEFT;
+            nextToken.strLiteral = "{";
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
+        case '}':
+            nextToken.type = TOK_CUR_RIGHT;
+            nextToken.strLiteral = "}";
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
         default:
             string buffString("");
             if (isNum(currentChar)){

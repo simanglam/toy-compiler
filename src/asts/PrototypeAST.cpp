@@ -2,6 +2,10 @@
 
 PrototypeAST::PrototypeAST(string _name, vector<DeclearNode*> _args, TOKENS _returnType): name(_name), args(_args), returnType(_returnType) {}
 
+string PrototypeAST::getName() {
+    return name;
+}
+
 Function* PrototypeAST::codegen(Compiler& c) {
     vector<llvm::Type*> Args(args.size());
 

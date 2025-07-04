@@ -4,8 +4,10 @@
 #include "asts/VariableNode.h"
 #include "asts/DeclearNode.h"
 #include "asts/GlobalDeclearNode.h"
+#include "asts/PrototypeAST.h"
+#include "asts/FunctionAST.h"
 
-static int getTokenPrec(const Token& t){
+static int getTokenPrec(const Token& t) {
     switch (t.type){
         case TOK_SEMI:
             return -1;
@@ -25,9 +27,9 @@ static int getTokenPrec(const Token& t){
 
 Parser::Parser(Scanner& _s): s(_s) {}
 
-Parser::~Parser(){}
+Parser::~Parser() {}
 
-BaseExpr* Parser::parseLine(){
+BaseExpr* Parser::parseLine() {
     switch (s.getToken().type){
     case TOK_EOF:
         break;
@@ -69,6 +71,7 @@ BaseExpr* Parser::parseGlobalDeclear() {
         s.getToken();
         cerr << "Parse function" << endl;
         node = parseFunction(name, type);
+        return node;
     }
 
     if (s.currentToken.type != TOK_SEMI) {
@@ -88,17 +91,31 @@ BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
         args.push_back(arg);
     }
     if (s.getToken().type == TOK_SEMI){
+        s.getToken();
         return new PrototypeAST(name, args, returnType);
     }
+    if (s.currentToken.type != TOK_CUR_LEFT){ 
+        cerr << "expect { or ;" << endl;
+        return nullptr;
+    }
+    return new FunctionAST(new PrototypeAST(name, args, returnType), parseBlock());
 }
 
-BaseExpr* Parser::parseExpression(){
+BlockNode* Parser::parseBlock() {
+    vector<BaseExpr *> exps;
+    while (s.getToken().type != TOK_CUR_RIGHT) {
+        exps.push_back(parsePrimary());
+    }
+    return new BlockNode(exps);
+}
+
+BaseExpr* Parser::parseExpression() {
     BaseExpr* lhs = parsePrimary();
     BaseExpr* node = parseBinOpRhs(0, lhs);
     return node;
 }
 
-BaseExpr* Parser::parsePrimary(){
+BaseExpr* Parser::parsePrimary() {
 
     switch (s.currentToken.type){
     case TOK_TYPE_INT:
@@ -115,7 +132,7 @@ BaseExpr* Parser::parsePrimary(){
     }
 }
 
-BaseExpr* Parser::parseIndExpression(){
+BaseExpr* Parser::parseIndExpression() {
     if (s.nextToken.type != TOK_OP_LEFTPAR){
         BaseExpr* node = new VariableNode(s.currentToken.strLiteral);
         s.getToken();
@@ -195,7 +212,7 @@ DeclearNode* Parser::parseDeclear() {
     return node;
 }
 
-BaseExpr* Parser::parseNumber(){
+BaseExpr* Parser::parseNumber() {
     BaseExpr* node = new NumberNode(s.currentToken.numVal);
     s.getToken();
     return node;
