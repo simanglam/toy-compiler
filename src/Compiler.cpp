@@ -10,3 +10,8 @@ Compiler::Compiler(Parser& _p): p(_p) {
 Compiler::~Compiler() {
     
 }
+
+AllocaInst* Compiler::allocateVar(llvm::Type* type, string& name) {
+    IRBuilder<> tempB(&currentFunction->getEntryBlock(), currentFunction->getEntryBlock().begin());
+    return tempB.CreateAlloca(type, nullptr, Twine(name.c_str()));
+}
