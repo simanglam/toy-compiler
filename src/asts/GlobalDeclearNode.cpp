@@ -10,6 +10,10 @@ GlobalDeclearNode::GlobalDeclearNode(string _id, TOKENS _type, int _iVal, double
     
 }
 
+GlobalDeclearNode::~GlobalDeclearNode() {
+    // delete ;
+}
+
 Value* GlobalDeclearNode::codegen(Compiler& c) {
     llvm::Type* type;
     llvm::Constant* val;

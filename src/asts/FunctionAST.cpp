@@ -9,6 +9,10 @@ FunctionAST::FunctionAST(PrototypeAST* _proto, BlockNode* _body): proto(_proto),
 
 }
 
+FunctionAST::~FunctionAST() {
+    delete proto; delete body;
+}
+
 Function* FunctionAST::codegen(Compiler& c) {
     Function* F = c.TheModule->getFunction(proto->getName());
 
@@ -20,6 +24,5 @@ Function* FunctionAST::codegen(Compiler& c) {
     BasicBlock* BB = BasicBlock::Create(*c.TheContext, "entry", F);
     c.Builder->SetInsertPoint(BB);
     body->codegen(c);
-    c.Builder->CreateRetVoid();
     return F;
 }

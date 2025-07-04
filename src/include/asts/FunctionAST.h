@@ -17,6 +17,7 @@ class FunctionAST: public BaseExpr {
     BlockNode* body;
 public:
     FunctionAST(PrototypeAST*, BlockNode*);
+    ~FunctionAST();
     Function* codegen(Compiler&);
 };
 

@@ -1,7 +1,9 @@
 #include "asts/DeclearNode.h"
 
-DeclearNode::DeclearNode(string _id, TOKENS _type, BaseExpr* _initVal): id(_id), type(_type), initVal(_initVal) {
-    
+DeclearNode::DeclearNode(string _id, TOKENS _type, BaseExpr* _initVal): id(_id), type(_type), initVal(_initVal) {}
+
+DeclearNode::~DeclearNode() {
+    delete initVal;
 }
 
 TOKENS DeclearNode::getType() {

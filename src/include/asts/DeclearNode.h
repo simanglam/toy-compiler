@@ -10,6 +10,7 @@ class DeclearNode : public BaseExpr {
     BaseExpr* initVal;
 public:
     DeclearNode(string = "", TOKENS = TOK_ERROR, BaseExpr* = nullptr);
+    ~DeclearNode();
     llvm::Value* codegen(Compiler&) override;
     TOKENS getType();
     string& getName();

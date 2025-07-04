@@ -12,6 +12,7 @@ class GlobalDeclearNode : public BaseExpr {
     double dVal;
 public:
     GlobalDeclearNode(string = "", TOKENS = TOK_ERROR, int = 0, double = 0.0);
+    ~GlobalDeclearNode();
     Value* codegen(Compiler&) override;
 };
 

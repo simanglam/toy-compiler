@@ -2,6 +2,11 @@
 
 PrototypeAST::PrototypeAST(string _name, vector<DeclearNode*> _args, TOKENS _returnType): name(_name), args(_args), returnType(_returnType) {}
 
+PrototypeAST::~PrototypeAST() {
+    for (DeclearNode* node : args)
+        delete node;
+}
+
 string PrototypeAST::getName() {
     return name;
 }
