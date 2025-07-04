@@ -3,17 +3,12 @@
 #include "Compiler.h"
 #include "asts/BinaryOpNode.h"
 
-BinaryOpNode::BinaryOpNode(BaseAST* _lhs, char _op, BaseAST* _rhs): lhs(_lhs), op(_op), rhs(_rhs) {}
+BinaryOpNode::BinaryOpNode(BaseExpr* _lhs, char _op, BaseExpr* _rhs): lhs(_lhs), op(_op), rhs(_rhs) {}
 
 BinaryOpNode::~BinaryOpNode() {
     delete lhs; delete rhs;
 }
 
-void BinaryOpNode::print(){
-    lhs->print();
-    std::cout << op << " ";
-    rhs->print();
-}
 
 Value* BinaryOpNode::codegen(Compiler& c) {
     Value* lhsCode = lhs->codegen(c);
@@ -31,19 +26,4 @@ Value* BinaryOpNode::codegen(Compiler& c) {
             return c.Builder->CreateSDiv(lhsCode, rhsCode);
     }
     
-}
-
-int BinaryOpNode::result() {
-    int lhsResult = lhs->result();
-    int rhsResult = rhs->result();
-    switch (op){
-    case '+':
-        return lhsResult + rhsResult;
-    case '-':
-        return lhsResult - rhsResult;
-    case '*':
-        return lhsResult * rhsResult;
-    case '/':
-        return lhsResult / rhsResult;
-    }
 }

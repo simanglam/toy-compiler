@@ -5,21 +5,30 @@ class Parser;
 
 #include "Token.h" 
 #include "Scanner.h"
-#include "asts/BaseAST.h"
+#include "asts/BaseExpr.h"
+#include "asts/BlockNode.h"
+#include "asts/DeclearNode.h"
+#include "asts/FunctionAST.h"
+#include "asts/PrototypeAST.h"
 
 class Parser{
 private:
     Scanner& s;
-    BaseAST* parsePrimary();
-    BaseAST* parseIndExpression();
-    BaseAST* parseParExpression();
-    BaseAST* parseExpression();
-    BaseAST* parseNumber();
-    BaseAST* parseBinOpRhs(int, BaseAST*);
+    BaseExpr* parsePrimary();
+    BaseExpr* parseIndExpression();
+    BaseExpr* parseParExpression();
+    BaseExpr* parseExpression();
+    BaseExpr* parseNumber();
+    BaseExpr* parseGlobalDeclear();
+    DeclearNode* parseDeclear();
+    BaseExpr* parseBinOpRhs(int, BaseExpr*);
+    BaseExpr* parseFunction(string, TOKENS);
+    // BlockNode* parseBlockNode();
+
 public:
     Parser(Scanner&);
     ~Parser();
-    BaseAST* parseLine();
+    BaseExpr* parseLine();
 };
 
 #endif

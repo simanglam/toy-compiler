@@ -1,4 +1,4 @@
-#include "asts/BaseAST.h"
+#include "asts/BaseExpr.h"
 
-BaseAST::BaseAST() {}
-BaseAST::~BaseAST() {}
+BaseExpr::BaseExpr() {}
+BaseExpr::~BaseExpr() {}

@@ -2,6 +2,8 @@
 #include "asts/BinaryOpNode.h"
 #include "asts/NumberNode.h"
 #include "asts/VariableNode.h"
+#include "asts/DeclearNode.h"
+#include "asts/GlobalDeclearNode.h"
 
 static int getTokenPrec(const Token& t){
     switch (t.type){
@@ -25,32 +27,83 @@ Parser::Parser(Scanner& _s): s(_s) {}
 
 Parser::~Parser(){}
 
-BaseAST* Parser::parseLine(){
+BaseExpr* Parser::parseLine(){
     switch (s.getToken().type){
     case TOK_EOF:
         break;
     case TOK_SEMI:
         s.getToken();
         break;
+    case TOK_TYPE_DOUBLE:
+    case TOK_TYPE_INT:
+        return parseGlobalDeclear();
     default:
-        BaseAST* node = parseExpression();
-        if (!node) cerr << "WTF!" << endl;
-        if (s.currentToken.type != TOK_SEMI) cerr << "Expect ';'" << endl;
+        BaseExpr* node = parseExpression();
         return node;
         break;
     }
     return nullptr;
 }
 
-BaseAST* Parser::parseExpression(){
-    BaseAST* lhs = parsePrimary();
-    BaseAST* node = parseBinOpRhs(0, lhs);
+BaseExpr* Parser::parseGlobalDeclear() {
+    TOKENS type = s.currentToken.type;
+    if (s.getToken().type != TOK_IND) {
+        cerr << "Expect identifier at line: " << s.getCurrentLine() << " but get " << s.currentToken.strLiteral << " instead." << endl;
+        s.getToken();
+        return nullptr;
+    }
+
+    string name = s.currentToken.strLiteral;
+    s.getToken();
+    BaseExpr* node = nullptr;
+
+    if (s.currentToken.type == TOK_OP_EQUAL) {
+        s.getToken();
+        node = new GlobalDeclearNode(name, type, s.currentToken.numVal);
+        s.getToken();
+    }
+    else if (s.currentToken.type == TOK_SEMI){
+        node = new GlobalDeclearNode(name, type);
+    }
+    else if (s.currentToken.type == TOK_OP_LEFTPAR){
+        s.getToken();
+        cerr << "Parse function" << endl;
+        node = parseFunction(name, type);
+    }
+
+    if (s.currentToken.type != TOK_SEMI) {
+        cerr << "Expect semi-colon at line: " << s.getCurrentLine() << endl;
+        s.getToken();
+        return nullptr;
+    }
     return node;
 }
 
-BaseAST* Parser::parsePrimary(){
+BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
+    vector<DeclearNode*> args;
+    while (s.currentToken.type != TOK_OP_RIGHTPAR){
+        s.getToken();
+        DeclearNode* arg = parseDeclear();
+        if (!arg) return nullptr;
+        args.push_back(arg);
+    }
+    if (s.getToken().type == TOK_SEMI){
+        return new PrototypeAST(name, args, returnType);
+    }
+}
+
+BaseExpr* Parser::parseExpression(){
+    BaseExpr* lhs = parsePrimary();
+    BaseExpr* node = parseBinOpRhs(0, lhs);
+    return node;
+}
+
+BaseExpr* Parser::parsePrimary(){
 
     switch (s.currentToken.type){
+    case TOK_TYPE_INT:
+    case TOK_TYPE_DOUBLE:
+        return parseDeclear();
     case TOK_NUM:
         return parseNumber();
     case TOK_IND:
@@ -58,25 +111,24 @@ BaseAST* Parser::parsePrimary(){
     case TOK_OP_LEFTPAR:
         return parseParExpression();
     default:
-        break;
+        return nullptr;
     }
 }
 
-
-BaseAST* Parser::parseIndExpression(){
+BaseExpr* Parser::parseIndExpression(){
     if (s.nextToken.type != TOK_OP_LEFTPAR){
-        BaseAST* node = new VariableNode(s.currentToken.strLiteral);
+        BaseExpr* node = new VariableNode(s.currentToken.strLiteral);
         s.getToken();
-        BaseAST* expr = parseBinOpRhs(0, node);
+        BaseExpr* expr = parseBinOpRhs(0, node);
         return expr;
     };
     return nullptr;
 }
 
-BaseAST* Parser::parseParExpression() {
+BaseExpr* Parser::parseParExpression() {
     s.getToken();
-    BaseAST* lhs = parsePrimary();
-    BaseAST* node = parseBinOpRhs(0, lhs);
+    BaseExpr* lhs = parsePrimary();
+    BaseExpr* node = parseBinOpRhs(0, lhs);
     if (!node) cerr << "Error when parsing par expression" << endl;
     if (s.currentToken.type != TOK_OP_RIGHTPAR) {
         cerr << "Missing right par" << endl;
@@ -86,7 +138,7 @@ BaseAST* Parser::parseParExpression() {
     return node;
 };
 
-BaseAST* Parser::parseBinOpRhs(int minPrec, BaseAST* lhs){
+BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
     while (true){
         int tokPrec = getTokenPrec(s.currentToken);
         if (tokPrec < minPrec)
@@ -95,7 +147,7 @@ BaseAST* Parser::parseBinOpRhs(int minPrec, BaseAST* lhs){
         char op = s.currentToken.strLiteral[0];
         s.getToken();
         
-        BaseAST* rhs = parsePrimary();
+        BaseExpr* rhs = parsePrimary();
 
         if (!rhs){
             cerr << "Error when Parsing Token: " << s.currentToken.strLiteral << endl;
@@ -113,8 +165,38 @@ BaseAST* Parser::parseBinOpRhs(int minPrec, BaseAST* lhs){
     }
 }
 
-BaseAST* Parser::parseNumber(){
-    BaseAST* node = new NumberNode(s.currentToken.numVal);
+DeclearNode* Parser::parseDeclear() {
+    TOKENS type = s.currentToken.type;
+    s.getToken();
+    if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
+        // cerr << "Expect identifier at line: " << s.getCurrentLine() << " but get " << s.currentToken.strLiteral << " instead." << endl;
+        return new DeclearNode("", type);
+    }
+
+    string name = s.currentToken.strLiteral;
+    s.getToken();
+    DeclearNode* node = nullptr;
+
+    if (s.currentToken.type == TOK_OP_EQUAL) {
+        s.getToken();
+        node = new DeclearNode(name, type, parsePrimary());
+    }
+    else {
+        node = new DeclearNode(name, type);
+    }
+
+    if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) return node;
+
+    if (s.currentToken.type != TOK_SEMI) {
+        cerr << "Expect semi-colon at line: " << s.getCurrentLine() << endl;
+        s.getToken();
+        return nullptr;
+    }
+    return node;
+}
+
+BaseExpr* Parser::parseNumber(){
+    BaseExpr* node = new NumberNode(s.currentToken.numVal);
     s.getToken();
     return node;
 }
