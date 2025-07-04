@@ -17,7 +17,9 @@ public:
     std::unique_ptr<llvm::LLVMContext> TheContext;
     std::unique_ptr<llvm::Module> TheModule;
     std::unique_ptr<IRBuilder<>> Builder;
-    std::map<std::string, Value *> NamedValues;
+    std::map<std::string, llvm::AllocaInst*> localVariables;
+    std::map<std::string, llvm::GlobalVariable*> globalVar;
+    Function* currentFunction;
 
     Compiler(Parser&);
     ~Compiler();
