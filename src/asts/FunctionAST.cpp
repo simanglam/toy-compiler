@@ -21,6 +21,8 @@ Function* FunctionAST::codegen(Compiler& c) {
     cout << F->empty() << endl;
     if (!F->empty()) return nullptr;
 
+    c.currentFunction = F;
+
     BasicBlock* BB = BasicBlock::Create(*c.TheContext, "entry", F);
     c.Builder->SetInsertPoint(BB);
     body->codegen(c);
