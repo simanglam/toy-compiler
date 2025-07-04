@@ -20,10 +20,11 @@ private:
     BaseExpr* parseExpression();
     BaseExpr* parseNumber();
     BaseExpr* parseGlobalDeclear();
-    DeclearNode* parseDeclear();
     BaseExpr* parseBinOpRhs(int, BaseExpr*);
     BaseExpr* parseFunction(string, TOKENS);
+    DeclearNode* parseDeclear();
     BlockNode* parseBlock();
+    BaseExpr* parseReturn();
 
 public:
     Parser(Scanner&);

@@ -6,6 +6,7 @@
 #include "asts/GlobalDeclearNode.h"
 #include "asts/PrototypeAST.h"
 #include "asts/FunctionAST.h"
+#include "asts/ReturnStatement.h"
 
 static int getTokenPrec(const Token& t) {
     switch (t.type){
@@ -40,8 +41,6 @@ BaseExpr* Parser::parseLine() {
     case TOK_TYPE_INT:
         return parseGlobalDeclear();
     default:
-        BaseExpr* node = parseExpression();
-        return node;
         break;
     }
     return nullptr;
@@ -121,6 +120,8 @@ BaseExpr* Parser::parsePrimary() {
         return parseDeclear();
     case TOK_NUM:
         return parseNumber();
+    case TOK_RETURN:
+        return parseReturn();
     case TOK_IND:
         return parseIndExpression();
     case TOK_OP_LEFTPAR:
@@ -180,6 +181,12 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
     }
 }
 
+BaseExpr* Parser::parseReturn() {
+    s.getToken();
+    BaseExpr* node = new ReturnStatement(parseExpression());
+    return node;
+}
+
 DeclearNode* Parser::parseDeclear() {
     TOKENS type = s.currentToken.type;
     s.getToken();
@@ -194,7 +201,7 @@ DeclearNode* Parser::parseDeclear() {
 
     if (s.currentToken.type == TOK_OP_EQUAL) {
         s.getToken();
-        node = new DeclearNode(name, type, parsePrimary());
+        node = new DeclearNode(name, type, parseExpression());
     }
     else {
         node = new DeclearNode(name, type);
