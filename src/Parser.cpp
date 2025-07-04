@@ -67,7 +67,6 @@ BaseExpr* Parser::parseGlobalDeclear() {
         node = new GlobalDeclearNode(name, type);
     }
     else if (s.currentToken.type == TOK_OP_LEFTPAR){
-        s.getToken();
         node = parseFunction(name, type);
         return node;
     }
@@ -84,7 +83,7 @@ BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
     vector<DeclearNode*> args;
     while (s.currentToken.type != TOK_OP_RIGHTPAR){
         s.getToken();
-        DeclearNode* arg = parseDeclear();
+        DeclearNode* arg = parseFunctionDeclear();
         if (!arg) return nullptr;
         args.push_back(arg);
     }
@@ -97,6 +96,25 @@ BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
         return nullptr;
     }
     return new FunctionAST(new PrototypeAST(name, args, returnType), parseBlock());
+}
+
+DeclearNode* Parser::parseFunctionDeclear() {
+    TOKENS type = s.currentToken.type;
+    if (type != TOK_TYPE_INT && type != TOK_TYPE_DOUBLE) {
+        cerr << "Not correct" << endl;
+        cerr << s.currentToken.strLiteral << endl;
+        return nullptr;
+    }
+    s.getToken();
+    if (s.currentToken.type == TOK_IND) {
+        DeclearNode* node = new DeclearNode(s.currentToken.strLiteral, type);
+        s.getToken();
+        return node;
+    }
+    else if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_LEFTPAR) {
+        return new DeclearNode("", type);
+    }
+    return nullptr;
 }
 
 BlockNode* Parser::parseBlock() {
@@ -191,7 +209,7 @@ DeclearNode* Parser::parseDeclear() {
     TOKENS type = s.currentToken.type;
     s.getToken();
     if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
-        // cerr << "Expect identifier at line: " << s.getCurrentLine() << " but get " << s.currentToken.strLiteral << " instead." << endl;
+        cerr << "Expect identifier at line: " << s.getCurrentLine() << " but get " << s.currentToken.strLiteral << " instead." << endl;
         return new DeclearNode("", type);
     }
 
@@ -207,7 +225,9 @@ DeclearNode* Parser::parseDeclear() {
         node = new DeclearNode(name, type);
     }
 
-    if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) return node;
+    if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR){
+        return node;
+    }
 
     if (s.currentToken.type != TOK_SEMI) {
         cerr << "Expect semi-colon at line: " << s.getCurrentLine() << endl;
