@@ -22,7 +22,6 @@ Value* DeclearNode::codegen(Compiler& c) {
         cerr << "You can't redefine the variable" << endl;
         return nullptr;
     }
-    IRBuilder<> tempB(&c.currentFunction->getEntryBlock(), c.currentFunction->getEntryBlock().begin());
 
     llvm::Type* t = nullptr;
     switch (type){
@@ -36,8 +35,7 @@ Value* DeclearNode::codegen(Compiler& c) {
             break;
     }
 
-    AllocaInst* a = tempB.CreateAlloca(t, nullptr, Twine(id.c_str()));
-    c.localVariables[id] = a;
+    c.localVariables[id] = c.allocateVar(t, id);
     llvm::Value* initV = initVal ? initVal->codegen(c) : Constant::getNullValue(t);
-    return c.Builder->CreateStore(initV, a);
+    return c.Builder->CreateStore(initV, c.localVariables[id]);
 }
