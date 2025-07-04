@@ -69,7 +69,6 @@ BaseExpr* Parser::parseGlobalDeclear() {
     }
     else if (s.currentToken.type == TOK_OP_LEFTPAR){
         s.getToken();
-        cerr << "Parse function" << endl;
         node = parseFunction(name, type);
         return node;
     }
@@ -116,7 +115,6 @@ BaseExpr* Parser::parseExpression() {
 }
 
 BaseExpr* Parser::parsePrimary() {
-
     switch (s.currentToken.type){
     case TOK_TYPE_INT:
     case TOK_TYPE_DOUBLE:
