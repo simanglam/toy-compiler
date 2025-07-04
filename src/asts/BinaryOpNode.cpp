@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "Compiler.h"
 #include "asts/BinaryOpNode.h"
 
@@ -25,5 +23,6 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         case '/':
             return c.Builder->CreateSDiv(lhsCode, rhsCode);
     }
+    return nullptr;
     
 }
