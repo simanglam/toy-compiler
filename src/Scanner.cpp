@@ -145,6 +145,8 @@ Token Scanner::getToken(){
         nextToken.type = TOK_TYPE_INT;
     else if (nextToken.strLiteral == "double")
         nextToken.type = TOK_TYPE_DOUBLE;
+    else if (nextToken.strLiteral == "return")
+        nextToken.type = TOK_RETURN;
 
     return currentToken;
 }
