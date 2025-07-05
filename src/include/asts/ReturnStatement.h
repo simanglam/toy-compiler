@@ -9,6 +9,7 @@ class ReturnStatement: public BaseExpr {
     BaseExpr* expr;
 public:
     ReturnStatement(BaseExpr*);
+    ~ReturnStatement();
     Value* codegen(Compiler&) override;
 };
 

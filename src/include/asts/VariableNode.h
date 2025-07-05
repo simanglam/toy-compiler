@@ -13,6 +13,7 @@ class VariableNode : public BaseExpr {
 public:
     VariableNode(string);
     Value* codegen(Compiler&) override;
+    string& getName();
 };
 
 #endif
