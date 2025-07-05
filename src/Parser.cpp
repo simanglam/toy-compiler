@@ -7,6 +7,7 @@
 #include "asts/PrototypeAST.h"
 #include "asts/FunctionAST.h"
 #include "asts/ReturnStatement.h"
+#include "asts/IfExpr.h"
 
 static int getTokenPrec(const Token& t) {
     switch (t.type){
@@ -132,6 +133,8 @@ BaseExpr* Parser::parseExpression() {
 
 BaseExpr* Parser::parsePrimary() {
     switch (s.currentToken.type){
+    case TOK_IF:
+        return parseIf();
     case TOK_TYPE_INT:
     case TOK_TYPE_DOUBLE:
         return parseDeclare();
@@ -194,6 +197,7 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
                 return nullptr;
             }
         }
+        
         lhs = new BinaryOpNode(lhs, op, rhs);
     }
 }
@@ -202,6 +206,59 @@ BaseExpr* Parser::parseReturn() {
     s.getToken();
     BaseExpr* node = new ReturnStatement(parseExpression());
     return node;
+}
+
+BaseExpr* Parser::parseIf() {
+    if (s.getToken().type != TOK_OP_LEFTPAR) {
+        cerr << "Expect ( at Line: " << s.getCurrentLine() << endl;
+        return nullptr;
+    }
+    BaseExpr* cond = parsePrimary();
+
+    if (!cond) {
+        return nullptr;
+    }
+
+    BlockNode* ifBody = nullptr;    
+
+    if (s.currentToken.type != TOK_CUR_LEFT) {        
+        vector<BaseExpr*> expr;
+        expr.push_back(parsePrimary());
+
+        if (!expr.back()) {
+            delete cond;
+            return nullptr;
+        }
+        ifBody = new BlockNode(expr);
+    }
+    else {
+        ifBody = parseBlock();
+    }
+
+    if (!ifBody) {
+        return nullptr;
+    }
+
+    if (s.currentToken.type != TOK_ELSE) {
+        return new IfExpr(cond, ifBody, nullptr);
+    }
+    
+    if (s.currentToken.type != TOK_CUR_LEFT) {
+        vector<BaseExpr*> expr;
+        expr.push_back(parsePrimary());
+
+        if (!expr.back()) {
+            delete cond;
+            return nullptr;
+        }
+
+        return new IfExpr(cond, ifBody, new BlockNode(expr));
+    }
+    else {
+        return new IfExpr(cond, ifBody, parseBlock());
+    }
+    return nullptr;
+
 }
 
 DeclareNode* Parser::parseDeclare() {

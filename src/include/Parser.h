@@ -26,6 +26,7 @@ private:
     BlockNode* parseBlock();
     BaseExpr* parseReturn();
     DeclareNode* parseFunctionDeclare();
+    BaseExpr* parseIf();
 
 public:
     Parser(Scanner&);

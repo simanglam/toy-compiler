@@ -8,6 +8,7 @@ enum TOKENS {
     TOK_EOF,
 
     TOK_TYPE_INT, TOK_TYPE_DOUBLE,
+    TOK_IF, TOK_ELSE,
     TOK_DO, TOK_WHILE,
     TOK_RETURN,
     
@@ -25,10 +26,6 @@ struct Token{
     TOKENS type;
     string strLiteral;
     int numVal;
-    void print(){
-        cout << this -> type << ": " << this -> strLiteral << endl
-        ;
-    }
 };
 
 #endif
