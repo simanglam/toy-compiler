@@ -4,6 +4,10 @@
 
 VariableNode::VariableNode(string _name): name(_name) {};
 
+string& VariableNode::getName() {
+    return name;
+}
+
 Value* VariableNode::codegen(Compiler& c) {
     if (!c.localVariables[name]) {
         cerr << "Unknown Variable: " << name << endl;
