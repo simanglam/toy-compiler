@@ -3,7 +3,7 @@
 class PrototypeAST;
 
 #include "asts/BaseExpr.h"
-#include "asts/DeclearNode.h"
+#include "asts/DeclareNode.h"
 
 #include <vector>
 #include <llvm/IR/Function.h>
@@ -13,14 +13,14 @@ using namespace llvm;
 
 class PrototypeAST: public BaseExpr {
     TOKENS returnType;
-    vector<DeclearNode*> args;
+    vector<DeclareNode*> args;
     string name;
 public:
-    PrototypeAST(string, vector<DeclearNode*>, TOKENS);
+    PrototypeAST(string, vector<DeclareNode*>, TOKENS);
     ~PrototypeAST();
     Function* codegen(Compiler&) override;
     string getName();
-    vector<DeclearNode*>& getArgs();
+    vector<DeclareNode*>& getArgs();
 };
 
 #endif

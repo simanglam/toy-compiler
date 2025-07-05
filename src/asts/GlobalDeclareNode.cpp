@@ -1,4 +1,4 @@
-#include "asts/GlobalDeclearNode.h"
+#include "asts/GlobalDeclareNode.h"
 
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Constants.h"
@@ -6,15 +6,15 @@
 
 using namespace llvm;
 
-GlobalDeclearNode::GlobalDeclearNode(string _id, TOKENS _type, int _iVal, double _dVal): id(_id), type(_type), iVal(_iVal), dVal(_dVal) {
+GlobalDeclareNode::GlobalDeclareNode(string _id, TOKENS _type, int _iVal, double _dVal): id(_id), type(_type), iVal(_iVal), dVal(_dVal) {
     
 }
 
-GlobalDeclearNode::~GlobalDeclearNode() {
+GlobalDeclareNode::~GlobalDeclareNode() {
     // delete ;
 }
 
-Value* GlobalDeclearNode::codegen(Compiler& c) {
+Value* GlobalDeclareNode::codegen(Compiler& c) {
     llvm::Type* type;
     llvm::Constant* val;
     

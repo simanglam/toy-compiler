@@ -2,8 +2,8 @@
 #include "asts/BinaryOpNode.h"
 #include "asts/NumberNode.h"
 #include "asts/VariableNode.h"
-#include "asts/DeclearNode.h"
-#include "asts/GlobalDeclearNode.h"
+#include "asts/DeclareNode.h"
+#include "asts/GlobalDeclareNode.h"
 #include "asts/PrototypeAST.h"
 #include "asts/FunctionAST.h"
 #include "asts/ReturnStatement.h"
@@ -39,14 +39,14 @@ BaseExpr* Parser::parseLine() {
         break;
     case TOK_TYPE_DOUBLE:
     case TOK_TYPE_INT:
-        return parseGlobalDeclear();
+        return parseGlobalDeclare();
     default:
         break;
     }
     return nullptr;
 }
 
-BaseExpr* Parser::parseGlobalDeclear() {
+BaseExpr* Parser::parseGlobalDeclare() {
     TOKENS type = s.currentToken.type;
     if (s.getToken().type != TOK_IND) {
         cerr << "Expect identifier at line: " << s.getCurrentLine() << " but get " << s.currentToken.strLiteral << " instead." << endl;
@@ -60,11 +60,11 @@ BaseExpr* Parser::parseGlobalDeclear() {
 
     if (s.currentToken.type == TOK_OP_EQUAL) {
         s.getToken();
-        node = new GlobalDeclearNode(name, type, s.currentToken.numVal);
+        node = new GlobalDeclareNode(name, type, s.currentToken.numVal);
         s.getToken();
     }
     else if (s.currentToken.type == TOK_SEMI){
-        node = new GlobalDeclearNode(name, type);
+        node = new GlobalDeclareNode(name, type);
     }
     else if (s.currentToken.type == TOK_OP_LEFTPAR){
         node = parseFunction(name, type);
@@ -80,10 +80,10 @@ BaseExpr* Parser::parseGlobalDeclear() {
 }
 
 BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
-    vector<DeclearNode*> args;
+    vector<DeclareNode*> args;
     while (s.currentToken.type != TOK_OP_RIGHTPAR){
         s.getToken();
-        DeclearNode* arg = parseFunctionDeclear();
+        DeclareNode* arg = parseFunctionDeclare();
         if (arg) args.push_back(arg);
     }
     if (s.getToken().type == TOK_SEMI){
@@ -96,7 +96,7 @@ BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
     return new FunctionAST(new PrototypeAST(name, args, returnType), parseBlock());
 }
 
-DeclearNode* Parser::parseFunctionDeclear() {
+DeclareNode* Parser::parseFunctionDeclare() {
     TOKENS type = s.currentToken.type;
     if (type == TOK_OP_RIGHTPAR) return nullptr;
     if (type != TOK_TYPE_INT && type != TOK_TYPE_DOUBLE) {
@@ -106,12 +106,12 @@ DeclearNode* Parser::parseFunctionDeclear() {
     }
     s.getToken();
     if (s.currentToken.type == TOK_IND) {
-        DeclearNode* node = new DeclearNode(s.currentToken.strLiteral, type);
+        DeclareNode* node = new DeclareNode(s.currentToken.strLiteral, type);
         s.getToken();
         return node;
     }
     else if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
-        return new DeclearNode("", type);
+        return new DeclareNode("", type);
     }
     return nullptr;
 }
@@ -134,7 +134,7 @@ BaseExpr* Parser::parsePrimary() {
     switch (s.currentToken.type){
     case TOK_TYPE_INT:
     case TOK_TYPE_DOUBLE:
-        return parseDeclear();
+        return parseDeclare();
     case TOK_NUM:
         return parseNumber();
     case TOK_RETURN:
@@ -204,24 +204,24 @@ BaseExpr* Parser::parseReturn() {
     return node;
 }
 
-DeclearNode* Parser::parseDeclear() {
+DeclareNode* Parser::parseDeclare() {
     TOKENS type = s.currentToken.type;
     s.getToken();
     if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
         cerr << "Expect identifier at line: " << s.getCurrentLine() << " but get " << s.currentToken.strLiteral << " instead." << endl;
-        return new DeclearNode("", type);
+        return new DeclareNode("", type);
     }
 
     string name = s.currentToken.strLiteral;
     s.getToken();
-    DeclearNode* node = nullptr;
+    DeclareNode* node = nullptr;
 
     if (s.currentToken.type == TOK_OP_EQUAL) {
         s.getToken();
-        node = new DeclearNode(name, type, parseExpression());
+        node = new DeclareNode(name, type, parseExpression());
     }
     else {
-        node = new DeclearNode(name, type);
+        node = new DeclareNode(name, type);
     }
 
     if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR){

@@ -24,7 +24,7 @@ Function* FunctionAST::codegen(Compiler& c) {
     BasicBlock* BB = BasicBlock::Create(*c.TheContext, "entry", F);
     c.Builder->SetInsertPoint(BB);
     
-    vector<DeclearNode*>& argNames = proto->getArgs();
+    vector<DeclareNode*>& argNames = proto->getArgs();
 
     unsigned idx = 0;
 

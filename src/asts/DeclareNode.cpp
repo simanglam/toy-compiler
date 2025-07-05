@@ -1,23 +1,23 @@
-#include "asts/DeclearNode.h"
+#include "asts/DeclareNode.h"
 
 using namespace llvm;
 
-DeclearNode::DeclearNode(string _id, TOKENS _type, BaseExpr* _initVal): id(_id), type(_type), initVal(_initVal) {}
+DeclareNode::DeclareNode(string _id, TOKENS _type, BaseExpr* _initVal): id(_id), type(_type), initVal(_initVal) {}
 
-DeclearNode::~DeclearNode() {
+DeclareNode::~DeclareNode() {
     delete initVal;
 }
 
-TOKENS DeclearNode::getType() {
+TOKENS DeclareNode::getType() {
     return type;
 }
 
-string& DeclearNode::getName() {
+string& DeclareNode::getName() {
     return id;
 }
 
 
-Value* DeclearNode::codegen(Compiler& c) {
+Value* DeclareNode::codegen(Compiler& c) {
     if (c.localVariables[id]) {
         cerr << "You can't redefine the variable" << endl;
         return nullptr;

@@ -1,9 +1,9 @@
 #include "asts/PrototypeAST.h"
 
-PrototypeAST::PrototypeAST(string _name, vector<DeclearNode*> _args, TOKENS _returnType): name(_name), args(_args), returnType(_returnType) {}
+PrototypeAST::PrototypeAST(string _name, vector<DeclareNode*> _args, TOKENS _returnType): name(_name), args(_args), returnType(_returnType) {}
 
 PrototypeAST::~PrototypeAST() {
-    for (DeclearNode* node : args)
+    for (DeclareNode* node : args)
         delete node;
 }
 
@@ -11,14 +11,14 @@ string PrototypeAST::getName() {
     return name;
 }
 
-vector<DeclearNode*>& PrototypeAST::getArgs() {
+vector<DeclareNode*>& PrototypeAST::getArgs() {
     return args;
 }
 
 Function* PrototypeAST::codegen(Compiler& c) {
     vector<llvm::Type*> Args;
 
-    for (DeclearNode* node : args) {
+    for (DeclareNode* node : args) {
         llvm::Type* type;
         switch (node->getType()){
             case TOK_TYPE_INT:

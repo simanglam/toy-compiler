@@ -7,7 +7,7 @@ class Parser;
 #include "Scanner.h"
 #include "asts/BaseExpr.h"
 #include "asts/BlockNode.h"
-#include "asts/DeclearNode.h"
+#include "asts/DeclareNode.h"
 #include "asts/FunctionAST.h"
 #include "asts/PrototypeAST.h"
 
@@ -19,13 +19,13 @@ private:
     BaseExpr* parseParExpression();
     BaseExpr* parseExpression();
     BaseExpr* parseNumber();
-    BaseExpr* parseGlobalDeclear();
+    BaseExpr* parseGlobalDeclare();
     BaseExpr* parseBinOpRhs(int, BaseExpr*);
     BaseExpr* parseFunction(string, TOKENS);
-    DeclearNode* parseDeclear();
+    DeclareNode* parseDeclare();
     BlockNode* parseBlock();
     BaseExpr* parseReturn();
-    DeclearNode* parseFunctionDeclear();
+    DeclareNode* parseFunctionDeclare();
 
 public:
     Parser(Scanner&);
