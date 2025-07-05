@@ -15,6 +15,7 @@ main: $(EXE)
 	g++ `llvm-config --cxxflags` $(includePath) -c -o $@ $<
 
 clean:
-	rm *.o
+	- rm *.o
 	+ make -C asts clean
+	- rm main
 .PHONY: clean
