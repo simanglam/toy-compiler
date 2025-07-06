@@ -25,7 +25,7 @@ Value* IfExpr::codegen(Compiler& c) {
         v = c.Builder->CreateTrunc(v, Type::getInt32Ty(*c.TheContext));
     }
 
-    v = c.Builder->CreateICmpSGT(v, ConstantInt::get(Type::getInt32Ty(*c.TheContext), APInt(32, 0, true)), "ifcond");
+    v = c.Builder->CreateICmpEQ(v, ConstantInt::get(Type::getInt32Ty(*c.TheContext), APInt(32, 0, true)), "ifcond");
     c.Builder->CreateCondBr(v, thenBlock, elseBlock);
     c.Builder->SetInsertPoint(thenBlock);
     ifBody->codegen(c);

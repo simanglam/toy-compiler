@@ -5,17 +5,16 @@ SRC += $(wildcard asts/*.cpp)
 EXE = $(patsubst %.cpp, %.o, $(SRC))
 
 main: $(EXE)
-	+ make -C asts
-	g++ `llvm-config --ldflags --system-libs --libs core native` -o $@ $^
+	g++ `llvm-config --ldflags --system-libs --libs core native` --debug -o $@ $^
 
 
 .PHONY: asts
 
 %.o: %.cpp
-	g++ `llvm-config --cxxflags` $(includePath) -c -o $@ $<
+	g++ `llvm-config --cxxflags` --debug $(includePath) -c -o $@ $<
 
 clean:
 	- rm *.o
-	+ make -C asts clean
+	- rm asts/*.o
 	- rm main
 .PHONY: clean

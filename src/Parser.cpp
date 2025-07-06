@@ -8,6 +8,9 @@
 #include "asts/FunctionAST.h"
 #include "asts/ReturnStatement.h"
 #include "asts/IfExpr.h"
+#include "asts/ErrorExpr.h"
+#include <format>
+#include <string>
 
 static int getTokenPrec(const Token& t) {
     switch (t.type){
@@ -34,6 +37,7 @@ Parser::~Parser() {}
 BaseExpr* Parser::parseLine() {
     switch (s.getToken().type){
     case TOK_EOF:
+        return nullptr;
         break;
     case TOK_SEMI:
         s.getToken();
@@ -44,15 +48,14 @@ BaseExpr* Parser::parseLine() {
     default:
         break;
     }
-    return nullptr;
+    return new ErrorExpr("Unexpect Token: " + s.currentToken.strLiteral);
 }
 
 BaseExpr* Parser::parseGlobalDeclare() {
     TOKENS type = s.currentToken.type;
     if (s.getToken().type != TOK_IND) {
-        cerr << "Expect identifier at line: " << s.getCurrentLine() << " but get " << s.currentToken.strLiteral << " instead." << endl;
         s.getToken();
-        return nullptr;
+        return new ErrorExpr("Expect identifier at line: " + to_string(s.getCurrentLine()) + " but get " + s.currentToken.strLiteral + " instead.");
     }
 
     string name = s.currentToken.strLiteral;
@@ -73,11 +76,14 @@ BaseExpr* Parser::parseGlobalDeclare() {
     }
 
     if (s.currentToken.type != TOK_SEMI) {
-        cerr << "Expect semi-colon at line: " << s.getCurrentLine() << endl;
         s.getToken();
-        return nullptr;
+        return new ErrorExpr("Expect semi-colon at line: " + to_string(s.getCurrentLine()));
     }
-    return node;
+    else {
+        return node;
+    }
+
+    return new ErrorExpr("Unexpect token at line: " + to_string(s.getCurrentLine()) + " " + s.currentToken.strLiteral);
 }
 
 BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
@@ -92,7 +98,7 @@ BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
     }
     if (s.currentToken.type != TOK_CUR_LEFT){ 
         cerr << "expect { or ;" << endl;
-        return nullptr;
+        return new ErrorExpr("expect { or ;");
     }
     return new FunctionAST(new PrototypeAST(name, args, returnType), parseBlock());
 }
@@ -147,7 +153,7 @@ BaseExpr* Parser::parsePrimary() {
     case TOK_OP_LEFTPAR:
         return parseParExpression();
     default:
-        return nullptr;
+        return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing primary");
     }
 }
 
@@ -158,17 +164,17 @@ BaseExpr* Parser::parseIndExpression() {
         BaseExpr* expr = parseBinOpRhs(0, node);
         return expr;
     };
-    return nullptr;
+    return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing id expr");
 }
 
 BaseExpr* Parser::parseParExpression() {
     s.getToken();
     BaseExpr* lhs = parsePrimary();
     BaseExpr* node = parseBinOpRhs(0, lhs);
-    if (!node) cerr << "Error when parsing par expression" << endl;
     if (s.currentToken.type != TOK_OP_RIGHTPAR) {
-        cerr << "Missing right par" << endl;
-        return nullptr;
+        delete node;
+        delete lhs;
+        return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
     }
     s.getToken();
     return node;
@@ -186,15 +192,13 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
         BaseExpr* rhs = parsePrimary();
 
         if (!rhs){
-            cerr << "Error when Parsing Token: " << s.currentToken.strLiteral << endl;
-            return nullptr;
+            return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing bin rhs");
         }
 
         if (tokPrec < getTokenPrec(s.currentToken)){
             rhs = parseBinOpRhs(tokPrec + 1, rhs);
             if (!rhs){
-                cerr << "Error when Parsing Token: " << s.currentToken.strLiteral << endl;
-                return nullptr;
+                return new ErrorExpr("Error when Parsing Token: " + s.currentToken.strLiteral);
             }
         }
         
@@ -211,12 +215,12 @@ BaseExpr* Parser::parseReturn() {
 BaseExpr* Parser::parseIf() {
     if (s.getToken().type != TOK_OP_LEFTPAR) {
         cerr << "Expect ( at Line: " << s.getCurrentLine() << endl;
-        return nullptr;
+        return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if");
     }
     BaseExpr* cond = parsePrimary();
 
     if (!cond) {
-        return nullptr;
+        return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing cond");
     }
 
     BlockNode* ifBody = nullptr;    
@@ -226,8 +230,9 @@ BaseExpr* Parser::parseIf() {
         expr.push_back(parsePrimary());
 
         if (!expr.back()) {
+            cerr << "error when parsing" << endl;
             delete cond;
-            return nullptr;
+            return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if Body");
         }
         ifBody = new BlockNode(expr);
     }
@@ -235,21 +240,18 @@ BaseExpr* Parser::parseIf() {
         ifBody = parseBlock();
     }
 
-    if (!ifBody) {
-        return nullptr;
-    }
-
-    if (s.currentToken.type != TOK_ELSE) {
+    if (s.nextToken.type != TOK_ELSE) {
         return new IfExpr(cond, ifBody, nullptr);
     }
-    
-    if (s.currentToken.type != TOK_CUR_LEFT) {
+    s.getToken();
+
+    if (s.getToken().type != TOK_CUR_LEFT) {
         vector<BaseExpr*> expr;
         expr.push_back(parsePrimary());
-
         if (!expr.back()) {
             delete cond;
-            return nullptr;
+            cerr << "error when parsing" << endl;
+            new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing else body");
         }
 
         return new IfExpr(cond, ifBody, new BlockNode(expr));
@@ -257,7 +259,7 @@ BaseExpr* Parser::parseIf() {
     else {
         return new IfExpr(cond, ifBody, parseBlock());
     }
-    return nullptr;
+    return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
 
 }
 
@@ -288,7 +290,7 @@ DeclareNode* Parser::parseDeclare() {
     if (s.currentToken.type != TOK_SEMI) {
         cerr << "Expect semi-colon at line: " << s.getCurrentLine() << endl;
         s.getToken();
-        return nullptr;
+        return (DeclareNode*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
     }
     return node;
 }
