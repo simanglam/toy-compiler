@@ -17,10 +17,17 @@ static int getTokenPrec(const Token& t) {
         case TOK_SEMI:
             return -1;
         case TOK_OP_EQUAL:
+        case TOK_OP_UNEQUAL:
+        case TOK_OP_GE:
+        case TOK_OP_GT:
+        case TOK_OP_LE:
+        case TOK_OP_LT:
             return 5;
+        case TOK_OP_ASSIGN:
+            return 10;
         case TOK_OP_ADD:
         case TOK_OP_MINUS:
-            return 10;
+            return 15;
         case TOK_OP_DIVIDE:
         case TOK_OP_TIMES:
             return 20;
@@ -62,7 +69,7 @@ BaseExpr* Parser::parseGlobalDeclare() {
     s.getToken();
     BaseExpr* node = nullptr;
 
-    if (s.currentToken.type == TOK_OP_EQUAL) {
+    if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
         node = new GlobalDeclareNode(name, type, s.currentToken.numVal);
         s.getToken();
@@ -186,7 +193,7 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
         if (tokPrec < minPrec)
             return lhs;
         
-        char op = s.currentToken.strLiteral[0];
+        TOKENS op = s.currentToken.type;
         s.getToken();
         
         BaseExpr* rhs = parsePrimary();
@@ -275,7 +282,7 @@ DeclareNode* Parser::parseDeclare() {
     s.getToken();
     DeclareNode* node = nullptr;
 
-    if (s.currentToken.type == TOK_OP_EQUAL) {
+    if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
         node = new DeclareNode(name, type, parseExpression());
     }

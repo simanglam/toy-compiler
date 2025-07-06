@@ -22,10 +22,10 @@ Value* IfExpr::codegen(Compiler& c) {
     Value* v = cond->codegen(c);
     if (!v) return nullptr;
     if (v->getType()->getTypeID() != Type::TypeID::IntegerTyID) {
-        v = c.Builder->CreateTrunc(v, Type::getInt32Ty(*c.TheContext));
+        v = c.Builder->CreateTrunc(v, Type::getInt8Ty(*c.TheContext), "trunc");
     }
 
-    v = c.Builder->CreateICmpEQ(v, ConstantInt::get(Type::getInt32Ty(*c.TheContext), APInt(32, 0, true)), "ifcond");
+    v = c.Builder->CreateICmpNE(v, ConstantInt::get(v->getType(), 0, true), "ifcond");
     c.Builder->CreateCondBr(v, thenBlock, elseBlock);
     c.Builder->SetInsertPoint(thenBlock);
     ifBody->codegen(c);

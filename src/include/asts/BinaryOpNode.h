@@ -5,10 +5,10 @@
 
 class BinaryOpNode : public BaseExpr {
     BaseExpr* lhs;
-    char op;
+    TOKENS op;
     BaseExpr* rhs;
 public:
-    BinaryOpNode(BaseExpr*, char, BaseExpr*);
+    BinaryOpNode(BaseExpr*, TOKENS, BaseExpr*);
     ~BinaryOpNode();
     Value* codegen(Compiler&) override;
 };
