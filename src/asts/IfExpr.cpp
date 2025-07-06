@@ -16,10 +16,17 @@ IfExpr::~IfExpr(){
 }
 
 Value* IfExpr::codegen(Compiler& c) {
-    llvm::BasicBlock* thenBlock = BasicBlock::Create(*c.TheContext, "then", c.currentFunction);
-    llvm::BasicBlock* elseBlock = BasicBlock::Create(*c.TheContext, "else");
-    llvm::BasicBlock* mergeBlock = BasicBlock::Create(*c.TheContext, "ifcont");
-    c.Builder->CreateCondBr(cond->codegen(c), thenBlock, elseBlock);
+    BasicBlock* thenBlock = BasicBlock::Create(*c.TheContext, "then", c.currentFunction);
+    BasicBlock* elseBlock = BasicBlock::Create(*c.TheContext, "else");
+    BasicBlock* mergeBlock = BasicBlock::Create(*c.TheContext, "ifcont");
+    Value* v = cond->codegen(c);
+    if (!v) return nullptr;
+    if (v->getType()->getTypeID() != Type::TypeID::IntegerTyID) {
+        v = c.Builder->CreateTrunc(v, Type::getInt32Ty(*c.TheContext));
+    }
+
+    v = c.Builder->CreateICmpSGT(v, ConstantInt::get(Type::getInt32Ty(*c.TheContext), APInt(32, 0, true)), "ifcond");
+    c.Builder->CreateCondBr(v, thenBlock, elseBlock);
     c.Builder->SetInsertPoint(thenBlock);
     ifBody->codegen(c);
     thenBlock = c.Builder->GetInsertBlock();
