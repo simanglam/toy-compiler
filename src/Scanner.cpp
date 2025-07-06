@@ -69,8 +69,58 @@ Token Scanner::getToken(){
             file >> nextChar;
             break;
         case '=':
-            nextToken.type = TOK_OP_EQUAL;
-            nextToken.strLiteral = "=";
+            if (nextChar == '='){
+                nextToken.type = TOK_OP_EQUAL;
+                nextToken.strLiteral = "==";
+                currentChar = nextChar;
+                file >> nextChar;
+            }
+            else {
+                nextToken.type = TOK_OP_ASSIGN;
+                nextToken.strLiteral = "=";
+            }
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
+        case '>':
+            if (nextChar == '='){
+                nextToken.type = TOK_OP_GE;
+                nextToken.strLiteral = ">=";
+                currentChar = nextChar;
+                file >> nextChar;
+            }
+            else {
+                nextToken.type = TOK_OP_GT;
+                nextToken.strLiteral = ">";
+            }
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
+        case '<':
+            if (nextChar == '='){
+                nextToken.type = TOK_OP_LE;
+                nextToken.strLiteral = "==";
+                currentChar = nextChar;
+                file >> nextChar;
+            }
+            else {
+                nextToken.type = TOK_OP_LT;
+                nextToken.strLiteral = "=";
+            }
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
+        case '!':
+            if (nextChar == '='){
+                nextToken.type = TOK_OP_UNEQUAL;
+                nextToken.strLiteral = "!=";
+                currentChar = nextChar;
+                file >> nextChar;
+            }
+            else {
+                nextToken.type = TOK_ERROR;
+                nextToken.strLiteral = "!";
+            }
             currentChar = nextChar;
             file >> nextChar;
             break;
