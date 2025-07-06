@@ -9,6 +9,7 @@
 #include "asts/ReturnStatement.h"
 #include "asts/IfExpr.h"
 #include "asts/ErrorExpr.h"
+#include "asts/FunctionCallExpr.h"
 #include <format>
 #include <string>
 
@@ -165,12 +166,22 @@ BaseExpr* Parser::parsePrimary() {
 }
 
 BaseExpr* Parser::parseIndExpression() {
+    string name = s.currentToken.strLiteral;
     if (s.nextToken.type != TOK_OP_LEFTPAR){
-        BaseExpr* node = new VariableNode(s.currentToken.strLiteral);
+        BaseExpr* node = new VariableNode(name);
         s.getToken();
         BaseExpr* expr = parseBinOpRhs(0, node);
         return expr;
-    };
+    }
+    vector<BaseExpr*> args;
+    s.getToken();
+    while (s.currentToken.type != TOK_OP_RIGHTPAR) {
+        s.getToken();
+        args.push_back(parsePrimary());
+    }
+    s.getToken();
+    return new FunctionCallExpr(name, args);
+    
     return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing id expr");
 }
 
