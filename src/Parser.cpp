@@ -56,7 +56,7 @@ BaseExpr* Parser::parseLine() {
     default:
         break;
     }
-    return new ErrorExpr("Unexpect Token: " + s.currentToken.strLiteral);
+    return new ErrorExpr("Unexpect Token: " + s.currentToken.strLiteral + " when parsing line");
 }
 
 BaseExpr* Parser::parseGlobalDeclare() {
@@ -146,6 +146,7 @@ BaseExpr* Parser::parseExpression() {
 }
 
 BaseExpr* Parser::parsePrimary() {
+
     switch (s.currentToken.type){
     case TOK_IF:
         return parseIf();
@@ -177,7 +178,7 @@ BaseExpr* Parser::parseIndExpression() {
     s.getToken();
     while (s.currentToken.type != TOK_OP_RIGHTPAR) {
         s.getToken();
-        args.push_back(parsePrimary());
+        args.push_back(parseExpression());
     }
     s.getToken();
     return new FunctionCallExpr(name, args);
@@ -216,7 +217,7 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
         if (tokPrec < getTokenPrec(s.currentToken)){
             rhs = parseBinOpRhs(tokPrec + 1, rhs);
             if (!rhs){
-                return new ErrorExpr("Error when Parsing Token: " + s.currentToken.strLiteral);
+                return new ErrorExpr("Error when Parsing Token: " + s.currentToken.strLiteral + " when parsing bin rhs");
             }
         }
         
@@ -242,7 +243,6 @@ BaseExpr* Parser::parseIf() {
     }
 
     BlockNode* ifBody = nullptr;    
-
     if (s.currentToken.type != TOK_CUR_LEFT) {        
         vector<BaseExpr*> expr;
         expr.push_back(parsePrimary());
@@ -259,6 +259,7 @@ BaseExpr* Parser::parseIf() {
     }
 
     if (s.nextToken.type != TOK_ELSE) {
+        if (s.nextToken.type == TOK_CUR_RIGHT) s.getToken();
         return new IfExpr(cond, ifBody, nullptr);
     }
     s.getToken();
