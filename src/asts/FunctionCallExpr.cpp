@@ -16,5 +16,5 @@ Value* FunctionCallExpr::codegen(Compiler& c) {
     vector<Value*> argValues;
     for (BaseExpr* arg : args)
         argValues.push_back(arg->codegen(c));
-    return c.Builder->CreateCall(f, argValues);
+    return c.Builder->CreateCall(f, argValues, "calltmp");
 }
