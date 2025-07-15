@@ -105,7 +105,6 @@ BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
         return new PrototypeAST(name, args, returnType);
     }
     if (s.currentToken.type != TOK_CUR_LEFT){ 
-        cerr << "expect { or ;" << endl;
         return new ErrorExpr("expect { or ;");
     }
     return new FunctionAST(new PrototypeAST(name, args, returnType), parseBlock());
@@ -115,9 +114,7 @@ DeclareNode* Parser::parseFunctionDeclare() {
     TOKENS type = s.currentToken.type;
     if (type == TOK_OP_RIGHTPAR) return nullptr;
     if (type != TOK_TYPE_INT && type != TOK_TYPE_DOUBLE) {
-        cerr << "Not correct" << endl;
-        cerr << s.currentToken.strLiteral << endl;
-        return nullptr;
+        return (DeclareNode *) new ErrorExpr("Unexpect Token: " + s.currentToken.strLiteral);
     }
     s.getToken();
     if (s.currentToken.type == TOK_IND) {
@@ -233,7 +230,6 @@ BaseExpr* Parser::parseReturn() {
 
 BaseExpr* Parser::parseIf() {
     if (s.getToken().type != TOK_OP_LEFTPAR) {
-        cerr << "Expect ( at Line: " << s.getCurrentLine() << endl;
         return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if");
     }
     BaseExpr* cond = parsePrimary();
@@ -248,7 +244,6 @@ BaseExpr* Parser::parseIf() {
         expr.push_back(parsePrimary());
 
         if (!expr.back()) {
-            cerr << "error when parsing" << endl;
             delete cond;
             return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if Body");
         }
@@ -269,7 +264,7 @@ BaseExpr* Parser::parseIf() {
         expr.push_back(parsePrimary());
         if (!expr.back()) {
             delete cond;
-            cerr << "error when parsing" << endl;
+            delete ifBody;
             new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing else body");
         }
 
@@ -286,7 +281,6 @@ DeclareNode* Parser::parseDeclare() {
     TOKENS type = s.currentToken.type;
     s.getToken();
     if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
-        cerr << "Expect identifier at line: " << s.getCurrentLine() << " but get " << s.currentToken.strLiteral << " instead." << endl;
         return new DeclareNode("", type);
     }
 
@@ -307,7 +301,6 @@ DeclareNode* Parser::parseDeclare() {
     }
 
     if (s.currentToken.type != TOK_SEMI) {
-        cerr << "Expect semi-colon at line: " << s.getCurrentLine() << endl;
         s.getToken();
         return (DeclareNode*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
     }

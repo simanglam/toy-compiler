@@ -12,11 +12,11 @@ BinaryOpNode::~BinaryOpNode() {
 Value* BinaryOpNode::codegen(Compiler& c) {
 
     if (op == TOK_OP_ASSIGN) {
-        if (typeid(*lhs) != typeid(VariableNode)) {
+        VariableNode* lid = static_cast<VariableNode*>(lhs);
+        if (!lid)  {
             cerr << "Expect variable at lhs of assign operator" << endl;
             return nullptr;
         }
-        VariableNode* lid = (VariableNode*)lhs;
         AllocaInst* var = c.localVariables[lid->getName()];
         if (!var) {
             cerr << "Unknow variable: " << lid->getName() << endl;
