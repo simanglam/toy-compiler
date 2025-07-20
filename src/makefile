@@ -20,4 +20,5 @@ clean:
 	- rm *.o
 	- rm asts/*.o
 	- rm main
+	- rm parser/*.o
 .PHONY: clean
