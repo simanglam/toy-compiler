@@ -17,12 +17,25 @@ Value* BinaryOpNode::codegen(Compiler& c) {
             cerr << "Expect variable at lhs of assign operator" << endl;
             return nullptr;
         }
-        AllocaInst* var = c.localVariables[lid->getName()];
+        Value* var = c.localVariables[lid->getName()]; 
+        if (!var) var = c.globalVar[lid->getName()];
         if (!var) {
             cerr << "Unknow variable: " << lid->getName() << endl;
             return nullptr;
         }
-        c.Builder->CreateStore(rhs->codegen(c), var);
+        
+        Value* storeValue = rhs->codegen(c);
+        if (storeValue->getType() != var->getType()){
+            switch (storeValue->getType()->getTypeID()){
+                case Type::IntegerTyID:
+                    storeValue = c.Builder->CreateSIToFP(storeValue, Type::getDoubleTy(*c.TheContext), "doubleTemp");
+                    break;
+                default:
+                    storeValue = c.Builder->CreateFPToSI(storeValue, Type::getInt32Ty(*c.TheContext), "intTemp");
+                    break;
+            }
+        }
+        c.Builder->CreateStore(storeValue, var);
         return var;
     }
     

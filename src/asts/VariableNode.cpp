@@ -9,10 +9,21 @@ string& VariableNode::getName() {
 }
 
 Value* VariableNode::codegen(Compiler& c) {
-    if (!c.localVariables[name]) {
+    Value* var = c.localVariables[name];
+    if (var) {
+        return c.Builder->CreateLoad(c.localVariables[name]->getAllocatedType(), var, name.c_str());
+    }
+    
+    var = c.globalVar[name];
+
+    if (var) {
+        return c.Builder->CreateLoad(c.globalVar[name]->getValueType(), var, name.c_str());
+    }
+
+    if (!var) {
         cerr << "Unknown Variable: " << name << endl;
         return nullptr;
     }
-    return c.Builder->CreateLoad(c.localVariables[name]->getAllocatedType(), c.localVariables[name], name.c_str());
+    return c.Builder->CreateLoad(c.localVariables[name]->getAllocatedType(), var, name.c_str());
     
 };

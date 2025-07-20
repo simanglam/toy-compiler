@@ -21,7 +21,7 @@ Value* GlobalDeclareNode::codegen(Compiler& c) {
     switch (this->type) {
         case TOK_TYPE_INT:
             type = llvm::Type::getInt32Ty(*c.TheContext);
-            val = llvm::ConstantInt::get(type, iVal);
+            val = llvm::ConstantInt::get(type, iVal, true);
             break;
         case TOK_TYPE_DOUBLE:
             type = llvm::Type::getDoubleTy(*c.TheContext);
@@ -37,5 +37,6 @@ Value* GlobalDeclareNode::codegen(Compiler& c) {
         val,
         llvm::Twine(id.c_str())
     );
+    c.globalVar[id] = gVar;
     return val;
 }
