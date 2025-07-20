@@ -4,14 +4,16 @@ SRC = $(wildcard *.cpp)
 SRC += $(wildcard asts/*.cpp)
 EXE = $(patsubst %.cpp, %.o, $(SRC))
 
+extraFlag = --debug
+
 main: $(EXE)
-	g++ `llvm-config --ldflags --system-libs --libs core native` --debug -o $@ $^
+	g++ `llvm-config --ldflags --system-libs --libs core native` $(extraFlag) -o $@ $^
 
 
 .PHONY: asts
 
 %.o: %.cpp
-	g++ `llvm-config --cxxflags` --debug $(includePath) -c -o $@ $<
+	g++ `llvm-config --cxxflags` --debug $(includePath) $(extraFlag) -c -o $@ $<
 
 clean:
 	- rm *.o
