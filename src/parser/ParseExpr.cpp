@@ -4,6 +4,7 @@
 #include "asts/BinaryOpNode.h"
 #include "asts/ConstExpr.h"
 #include "asts/VariableNode.h"
+#include "asts/UnaryExpr.h"
 
 static int getTokenPrec(const Token& t) {
     switch (t.type){
@@ -93,6 +94,12 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
         
         lhs = new BinaryOpNode(lhs, op, rhs);
     }
+}
+
+BaseExpr* Parser::parseUnary() {
+    TOKENS op = s.currentToken.type;
+    s.getToken();
+    return new UnaryExpr(parsePrimary(), op);
 }
 
 BaseExpr* Parser::parseInteger() {

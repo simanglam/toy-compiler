@@ -77,6 +77,8 @@ BlockNode* Parser::parseBlock() {
 BaseExpr* Parser::parsePrimary() {
 
     switch (s.currentToken.type){
+    case TOK_OP_MINUS:
+        return parseUnary();
     case TOK_IF:
         return parseIf();
     case TOK_TYPE_INT:

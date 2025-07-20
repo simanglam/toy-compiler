@@ -15,6 +15,7 @@ class Parser{
 private:
     Scanner& s;
     BaseExpr* parsePrimary();
+    BaseExpr* parseUnary();
     BaseExpr* parseIndExpression();
     BaseExpr* parseParExpression();
     BaseExpr* parseExpression();
@@ -30,6 +31,7 @@ private:
     BaseExpr* parseIf();
 
 public:
+    Parser();
     Parser(Scanner&);
     ~Parser();
     BaseExpr* parseLine();
