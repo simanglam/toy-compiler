@@ -18,7 +18,8 @@ private:
     BaseExpr* parseIndExpression();
     BaseExpr* parseParExpression();
     BaseExpr* parseExpression();
-    BaseExpr* parseNumber();
+    BaseExpr* parseInteger();
+    BaseExpr* parseDouble();
     BaseExpr* parseGlobalDeclare();
     BaseExpr* parseBinOpRhs(int, BaseExpr*);
     BaseExpr* parseFunction(string, TOKENS);

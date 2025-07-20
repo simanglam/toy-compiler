@@ -19,7 +19,7 @@ enum TOKENS {
     TOK_DOT,
     TOK_SEMI, TOK_COMMA, TOK_CUR_LEFT, TOK_CUR_RIGHT,
 
-    TOK_NUM, TOK_FLOAT, TOK_CHAR, TOK_IND,
+    TOK_INT, TOK_FLOAT, TOK_CHAR, TOK_IND,
     TOK_ERROR
 };
 
@@ -28,7 +28,8 @@ using namespace std;
 struct Token{
     TOKENS type;
     string strLiteral;
-    int numVal;
+    int intVal;
+    double floatVal;
 };
 
 #endif

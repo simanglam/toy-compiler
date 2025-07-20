@@ -95,8 +95,14 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
     }
 }
 
-BaseExpr* Parser::parseNumber() {
-    BaseExpr* node = new IntegerExpr(s.currentToken.numVal);
+BaseExpr* Parser::parseInteger() {
+    BaseExpr* node = new IntegerExpr(s.currentToken.intVal);
+    s.getToken();
+    return node;
+}
+
+BaseExpr* Parser::parseDouble() {
+    BaseExpr* node = new DoubleExpr(s.currentToken.floatVal);
     s.getToken();
     return node;
 }

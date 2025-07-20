@@ -1,5 +1,5 @@
 #include "asts/FunctionAST.h"
-#include "asts/NumberNode.h"
+#include "asts/ConstExpr.h"
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 
@@ -40,6 +40,9 @@ Function* FunctionAST::codegen(Compiler& c) {
         c.localVariables[name] = Alloca;
   }
     body->codegen(c);
+
+    c.currentFunction = nullptr;
+    c.localVariables.clear();
 
     return F;
 }

@@ -43,7 +43,7 @@ BaseExpr* Parser::parseGlobalDeclare() {
 
     if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
-        node = new GlobalDeclareNode(name, type, s.currentToken.numVal);
+        node = new GlobalDeclareNode(name, type, s.currentToken.intVal, s.currentToken.floatVal);
         s.getToken();
     }
     else if (s.currentToken.type == TOK_SEMI){
@@ -82,8 +82,10 @@ BaseExpr* Parser::parsePrimary() {
     case TOK_TYPE_INT:
     case TOK_TYPE_DOUBLE:
         return parseDeclare();
-    case TOK_NUM:
-        return parseNumber();
+    case TOK_INT:
+        return parseInteger();
+    case TOK_FLOAT:
+        return parseDouble();
     case TOK_RETURN:
         return parseReturn();
     case TOK_IND:

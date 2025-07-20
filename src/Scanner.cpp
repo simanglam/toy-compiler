@@ -169,9 +169,22 @@ Token Scanner::getToken(){
                     file >> nextChar;
                 } while (isNum(currentChar) && file.good());
                 if (!file.good()) buffString += nextChar;
-                nextToken.type = TOK_NUM;
-                nextToken.numVal = atoi(buffString.c_str());
-                nextToken.strLiteral = buffString;
+                if (currentChar == '.') {
+                    file >> nextChar;
+                    do {
+                        buffString += currentChar;
+                        currentChar = nextChar;
+                        file >> nextChar;
+                    } while (isNum(currentChar) && file.good());
+                    nextToken.type = TOK_FLOAT;
+                    nextToken.floatVal = stod(buffString);
+                    nextToken.strLiteral = buffString;
+                }
+                else {
+                    nextToken.type = TOK_INT;
+                    nextToken.intVal = atoi(buffString.c_str());
+                    nextToken.strLiteral = buffString;
+                }
             }
             else if (isAlpha(currentChar)){
                 do {

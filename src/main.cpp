@@ -11,14 +11,16 @@
 static map<int, int> opTable;
 
 int main(int argc, char ** argv){
-
     string filename = "./test.txt";
     Scanner s(filename);
     Parser p(s);
+    Compiler c(p);
     Token t = {};
-    BaseAST* ast = nullptr;
+    BaseExpr* ast = nullptr;
 
     while ((ast = p.parseLine()) != nullptr){
-        cout << ast->result() << endl;
-    }  
+        ast->codegen(c);
+        delete ast;
+    }
+    c.TheModule.get()->print(outs(), nullptr);
 }
