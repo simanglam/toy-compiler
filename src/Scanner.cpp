@@ -178,7 +178,7 @@ Token Scanner::getToken(){
                     buffString += currentChar;
                     currentChar = nextChar;
                     file >> nextChar;
-                } while (isAlpha(currentChar) && file.good());
+                } while ((isAlpha(currentChar) || isNum(currentChar)) && file.good());
                 if (!file.good()) buffString += nextChar;
                 nextToken.type = TOK_IND;
                 nextToken.strLiteral = buffString;
