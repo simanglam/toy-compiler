@@ -1,4 +1,4 @@
-#ifndef __NumberNode_HEADER__
+#ifndef __ConstExpr_HEADER__
 #define __NumberNode_HEADER__
 
 #include "asts/BaseExpr.h"
@@ -6,10 +6,10 @@
 
 using namespace llvm;
 
-class NumberNode : public BaseExpr {
+class IntegerExpr : public BaseExpr {
     int val;
 public:
-    NumberNode(int);
+    IntegerExpr(int);
     Value* codegen(Compiler&) override;
 };
 

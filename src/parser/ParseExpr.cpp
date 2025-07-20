@@ -2,7 +2,7 @@
 #include "asts/ErrorExpr.h"
 #include "asts/FunctionCallExpr.h"
 #include "asts/BinaryOpNode.h"
-#include "asts/NumberNode.h"
+#include "asts/ConstExpr.h"
 #include "asts/VariableNode.h"
 
 static int getTokenPrec(const Token& t) {
@@ -96,7 +96,7 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
 }
 
 BaseExpr* Parser::parseNumber() {
-    BaseExpr* node = new NumberNode(s.currentToken.numVal);
+    BaseExpr* node = new IntegerExpr(s.currentToken.numVal);
     s.getToken();
     return node;
 }
