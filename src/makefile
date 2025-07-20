@@ -2,6 +2,7 @@ includePath = -Iinclude/
 
 SRC = $(wildcard *.cpp)
 SRC += $(wildcard asts/*.cpp)
+SRC += $(wildcard parser/*.cpp)
 EXE = $(patsubst %.cpp, %.o, $(SRC))
 
 extraFlag = --debug
