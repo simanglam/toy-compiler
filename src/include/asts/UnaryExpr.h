@@ -10,6 +10,7 @@ public:
     UnaryExpr(BaseExpr*, TOKENS);
     ~UnaryExpr();
     Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif

@@ -12,6 +12,7 @@ public:
     IfExpr(BaseExpr*, BlockNode*, BlockNode*);
     ~IfExpr();
     Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif

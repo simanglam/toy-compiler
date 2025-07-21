@@ -11,6 +11,7 @@ public:
     ReturnStatement(BaseExpr*);
     ~ReturnStatement();
     Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif

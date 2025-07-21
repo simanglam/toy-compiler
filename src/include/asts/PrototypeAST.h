@@ -21,6 +21,7 @@ public:
     Function* codegen(Compiler&) override;
     string getName();
     vector<DeclareNode*>& getArgs();
+    bool eval(Analyser&) override;
 };
 
 #endif

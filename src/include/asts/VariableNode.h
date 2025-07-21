@@ -14,6 +14,7 @@ public:
     VariableNode(string);
     Value* codegen(Compiler&) override;
     string& getName();
+    bool eval(Analyser&) override;
 };
 
 #endif

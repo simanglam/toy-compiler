@@ -14,6 +14,7 @@ public:
     GlobalDeclareNode(string = "", TOKENS = TOK_ERROR, int = 0, double = 0.0);
     ~GlobalDeclareNode();
     Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif
