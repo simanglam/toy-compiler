@@ -2,14 +2,14 @@
 #include "asts/BinaryOpNode.h"
 #include "asts/VariableNode.h"
 
-inline Value* castToSameType(Compiler& c, Value* storeValue) {
-    switch (storeValue->getType()->getTypeID()){
-        case Type::IntegerTyID:
-            storeValue = c.Builder->CreateSIToFP(storeValue, Type::getDoubleTy(*c.TheContext), "doubleTemp");
-        break;
-        default:
-            storeValue = c.Builder->CreateFPToSI(storeValue, Type::getInt32Ty(*c.TheContext), "intTemp");
-        break;
+Value* castToSameType(Compiler& c, EVALTYPE target, Value* storeValue) {
+    switch (target){
+        case FLOAT:
+            storeValue = c.Builder->CreateSIToFP(storeValue, Type::getDoubleTy(*c.TheContext), "floatCastTemp");
+            break;
+        case INTEGER:
+            storeValue = c.Builder->CreateFPToSI(storeValue, Type::getInt32Ty(*c.TheContext), "IntCastTemp");
+            break;
     }
     return storeValue;
 }
@@ -33,8 +33,8 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         if (!var) var = c.globalVar[lid->getName()];
         
         Value* storeValue = rhs->codegen(c);
-        if (storeValue->getType() != var->getType()){
-            storeValue = castToSameType(c, storeValue);
+        if (lhs->evalType != rhs->evalType){
+            storeValue = castToSameType(c, lhs->evalType, storeValue);
         }
         c.Builder->CreateStore(storeValue, var);
         return var;
@@ -45,8 +45,11 @@ Value* BinaryOpNode::codegen(Compiler& c) {
     llvm::Value* rhsCode = rhs->codegen(c);
     if (!lhsCode || !rhsCode)
         return nullptr;
-    if (lhsCode->getType() != rhsCode->getType()){
-        rhsCode = castToSameType(c, rhsCode);
+    if (lhs->evalType != evalType) {
+        lhsCode = castToSameType(c, evalType, lhsCode);
+    }
+    if (rhs->evalType != evalType) {
+        rhsCode = castToSameType(c, evalType, rhsCode);
     }
     switch (op){
         case TOK_OP_ADD:
@@ -79,10 +82,16 @@ Value* BinaryOpNode::codegen(Compiler& c) {
 bool BinaryOpNode::eval(Analyser& a) {
     lhs->eval(a);
     rhs->eval(a);
-    if (lhs->evalType != rhs->evalType) {
-        cerr << "Both side should have same type" << endl;
-        return false;
+    if (lhs->evalType != rhs->evalType){
+        if (op == TOK_OP_ASSIGN){
+            evalType = lhs->evalType;
+        }
+        else {
+            evalType = INTEGER;
+        }
     }
-    evalType = lhs->evalType;
+    else {
+        evalType = lhs->evalType;
+    }
     return true;
 }
