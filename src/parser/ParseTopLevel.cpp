@@ -7,6 +7,7 @@
 #include "asts/ReturnStatement.h"
 #include "asts/IfExpr.h"
 #include "asts/ErrorExpr.h"
+#include "asts/ConstExpr.h"
 #include <string>
 
 Parser::Parser(Scanner& _s): s(_s) {}
@@ -68,9 +69,12 @@ BaseExpr* Parser::parseGlobalDeclare() {
 
 BlockNode* Parser::parseBlock() {
     vector<BaseExpr *> exps;
-    while (s.getToken().type != TOK_CUR_RIGHT) {
+    do {
+        s.getToken();
+        if (s.currentToken.type == TOK_CUR_RIGHT) break;
         exps.push_back(parsePrimary());
-    }
+    } while (s.currentToken.type != TOK_CUR_RIGHT);
+    //s.getToken();
     return new BlockNode(exps);
 }
 
