@@ -11,7 +11,8 @@ class BlockNode : public BaseExpr {
 public:
     BlockNode(vector<BaseExpr*>);
     ~BlockNode();
-    llvm::Value* codegen(Compiler&);
+    llvm::Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif

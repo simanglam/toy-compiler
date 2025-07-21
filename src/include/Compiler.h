@@ -20,9 +20,10 @@ public:
     std::map<std::string, llvm::AllocaInst*> localVariables;
     std::map<std::string, llvm::GlobalVariable*> globalVar;
     Function* currentFunction;
+    void compileToASM();
+    void compileToIR();
 
     AllocaInst* allocateVar(llvm::Type*, string&);
-
     Compiler(Parser&);
     ~Compiler();
 };

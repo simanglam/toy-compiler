@@ -9,7 +9,8 @@ class FunctionCallExpr : public BaseExpr{
 public:
     FunctionCallExpr(string&, vector<BaseExpr*>&);
     ~FunctionCallExpr();
-    Value* codegen(Compiler&);
+    Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif

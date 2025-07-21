@@ -6,7 +6,8 @@ using namespace std;
 
 class Analyser {
 public:
-    map<string, bool> symbolTable;
+    map<string, EVALTYPE> globalSymbolTable;
+    map<string, EVALTYPE> localSymbolTable;
     EVALTYPE returnType;
     Analyser();
     ~Analyser();

@@ -11,6 +11,7 @@ public:
     BinaryOpNode(BaseExpr*, TOKENS, BaseExpr*);
     ~BinaryOpNode();
     Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif

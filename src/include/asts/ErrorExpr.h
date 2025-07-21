@@ -9,7 +9,8 @@ class ErrorExpr : public BaseExpr{
 public:
     ErrorExpr(string);
     ~ErrorExpr();
-    Value* codegen(Compiler&);
+    Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif

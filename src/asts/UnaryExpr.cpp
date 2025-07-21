@@ -9,3 +9,9 @@ UnaryExpr::~UnaryExpr() {
 Value* UnaryExpr::codegen(Compiler& c) {
     return c.Builder->CreateNeg(target->codegen(c), "negTemp");
 }
+
+bool UnaryExpr::eval(Analyser& a) {
+    bool result = target->eval(a);
+    evalType = target->evalType;
+    return result;
+}

@@ -18,7 +18,8 @@ class FunctionAST: public BaseExpr {
 public:
     FunctionAST(PrototypeAST*, BlockNode*);
     ~FunctionAST();
-    Function* codegen(Compiler&);
+    Function* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif

@@ -11,6 +11,7 @@ class IntegerExpr : public BaseExpr {
 public:
     IntegerExpr(int);
     Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 class DoubleExpr : public BaseExpr {
@@ -18,6 +19,7 @@ class DoubleExpr : public BaseExpr {
 public:
     DoubleExpr(double);
     Value* codegen(Compiler&) override;
+    bool eval(Analyser&) override;
 };
 
 #endif

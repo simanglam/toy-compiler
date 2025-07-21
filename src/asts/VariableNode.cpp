@@ -27,3 +27,12 @@ Value* VariableNode::codegen(Compiler& c) {
     return c.Builder->CreateLoad(c.localVariables[name]->getAllocatedType(), var, name.c_str());
     
 };
+
+bool VariableNode::eval(Analyser& a) {
+    if (!(a.localSymbolTable[name] || a.globalSymbolTable[name])){
+        cerr << "Unknown variable: " << name << endl;
+        return false;
+    }
+    evalType = (a.localSymbolTable[name]) ? a.localSymbolTable[name] : a.globalSymbolTable[name];
+    return true;
+}

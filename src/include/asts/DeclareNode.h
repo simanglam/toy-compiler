@@ -14,6 +14,7 @@ public:
     llvm::Value* codegen(Compiler&) override;
     TOKENS getType();
     string& getName();
+    bool eval(Analyser&) override;
 };
 
 #endif
