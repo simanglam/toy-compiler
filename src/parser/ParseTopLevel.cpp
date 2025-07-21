@@ -69,12 +69,9 @@ BaseExpr* Parser::parseGlobalDeclare() {
 
 BlockNode* Parser::parseBlock() {
     vector<BaseExpr *> exps;
-    do {
-        s.getToken();
-        if (s.currentToken.type == TOK_CUR_RIGHT) break;
+    while (s.getToken().type != TOK_CUR_RIGHT && s.currentToken.type != TOK_EOF) {
         exps.push_back(parsePrimary());
-    } while (s.currentToken.type != TOK_CUR_RIGHT);
-    //s.getToken();
+    }
     return new BlockNode(exps);
 }
 
@@ -98,6 +95,8 @@ BaseExpr* Parser::parsePrimary() {
         return parseIndExpression();
     case TOK_OP_LEFTPAR:
         return parseParExpression();
+    case TOK_CUR_RIGHT:
+        return new IntegerExpr(0);
     default:
         return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing primary");
     }

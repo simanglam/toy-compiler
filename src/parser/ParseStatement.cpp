@@ -39,19 +39,19 @@ BaseExpr* Parser::parseIf() {
     }
 
     if (s.nextToken.type != TOK_ELSE) {
-        if (s.nextToken.type == TOK_CUR_RIGHT) s.getToken();
         return new IfExpr(cond, ifBody, nullptr);
     }
     s.getToken();
 
     if (s.getToken().type != TOK_CUR_LEFT) {
         vector<BaseExpr*> expr;
-        expr.reserve(50);
+        expr.reserve(1);
         expr.push_back(parsePrimary());
         return new IfExpr(cond, ifBody, new BlockNode(expr));
     }
     else {
-        return new IfExpr(cond, ifBody, parseBlock());
+        BaseExpr* node = new IfExpr(cond, ifBody, parseBlock());
+        return node;
     }
     return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
 
