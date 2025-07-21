@@ -30,12 +30,13 @@ Value* IfExpr::codegen(Compiler& c) {
     c.Builder->SetInsertPoint(thenBlock);
     ifBody->codegen(c);
     thenBlock = c.Builder->GetInsertBlock();
-    c.Builder->CreateBr(mergeBlock);
     c.currentFunction->insert(c.currentFunction->end(), elseBlock);
-    c.Builder->SetInsertPoint(elseBlock);
-    if (thenBody) thenBody->codegen(c);
     c.Builder->CreateBr(mergeBlock);
-
+    c.Builder->SetInsertPoint(elseBlock);
+    if (thenBody) {
+        thenBody->codegen(c);
+    }
+    c.Builder->CreateBr(mergeBlock);
     c.currentFunction->insert(c.currentFunction->end(), mergeBlock);
     c.Builder->SetInsertPoint(mergeBlock);
     return nullptr;
