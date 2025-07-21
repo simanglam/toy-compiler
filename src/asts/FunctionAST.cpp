@@ -43,6 +43,10 @@ Function* FunctionAST::codegen(Compiler& c) {
 
     c.currentFunction = nullptr;
     c.localVariables.clear();
+    if (F->getReturnType()->isDoubleTy())
+        c.Builder->CreateRet(ConstantFP::get(F->getReturnType(), 0.0));
+    else
+        c.Builder->CreateRet(ConstantInt::get(F->getReturnType(), 0, true));
 
     return F;
 }
