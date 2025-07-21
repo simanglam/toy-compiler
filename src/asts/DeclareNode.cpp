@@ -35,11 +35,16 @@ Value* DeclareNode::codegen(Compiler& c) {
 }
 
 bool DeclareNode::eval(Analyser& c) {
+    bool result = true;
+    if (initVal){
+        result = initVal->eval(c);
+    }
+
     evalType = (type == TOK_TYPE_INT) ? INTEGER : FLOAT;
     if (c.localSymbolTable[id]) {
         cerr << "Redefined id: " << id << endl;
         return false;
     }
     c.localSymbolTable[id] = evalType;
-    return true;
+    return true && result;
 }
