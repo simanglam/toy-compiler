@@ -13,3 +13,8 @@ IntegerExpr::IntegerExpr(int _val): val(_val) {}
 Value* IntegerExpr::codegen(Compiler& c) {
     return ConstantInt::get(Type::getInt32Ty(*c.TheContext), val, true);
 }
+
+bool IntegerExpr::eval(Analyser& a) {
+    evalType = EVALTYPE::INTEGER;
+    return true;
+}

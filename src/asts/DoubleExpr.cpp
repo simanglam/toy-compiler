@@ -13,3 +13,8 @@ DoubleExpr::DoubleExpr(double _val): val(_val) {}
 Value* DoubleExpr::codegen(Compiler& c) {
     return ConstantFP::get(Type::getDoubleTy(*c.TheContext), val);
 }
+
+bool DoubleExpr::eval(Analyser& c) {
+    evalType = FLOAT;
+    return true;
+}

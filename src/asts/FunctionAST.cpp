@@ -38,11 +38,28 @@ Function* FunctionAST::codegen(Compiler& c) {
         AllocaInst *Alloca = c.allocateVar(Arg.getType(), name);
         c.Builder->CreateStore(&Arg, Alloca);
         c.localVariables[name] = Alloca;
-  }
+    }
     body->codegen(c);
 
     c.currentFunction = nullptr;
     c.localVariables.clear();
 
     return F;
+}
+
+bool FunctionAST::eval(Analyser& a) {
+    bool result = true;
+    if (a.globalSymbolTable[proto->getName()] == UNDIFINED){
+        result = result && proto->eval(a);
+    }
+    a.returnType = a.globalSymbolTable[proto->getName()];
+
+    for (auto arg : proto->getArgs()) {
+        arg->eval(a);
+    }
+
+    result = result && body->eval(a);
+    a.localSymbolTable.clear();
+    a.returnType = UNDIFINED;
+    return result;
 }

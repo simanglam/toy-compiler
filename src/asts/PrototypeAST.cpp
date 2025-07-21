@@ -49,3 +49,13 @@ Function* PrototypeAST::codegen(Compiler& c) {
     Function* F = Function::Create(FT, GlobalValue::ExternalLinkage, llvm::Twine(name), c.TheModule.get());
     return F;
 }
+
+bool PrototypeAST::eval(Analyser& a) {
+    if (a.globalSymbolTable[name] != UNDIFINED){
+        cerr << "You can't redifined the function: " << name << endl;
+        return false;
+    }
+    evalType = (returnType == TOK_TYPE_INT) ? INTEGER : FLOAT;
+    a.globalSymbolTable[name] = evalType;
+    return true;
+}

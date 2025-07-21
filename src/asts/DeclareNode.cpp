@@ -16,13 +16,7 @@ string& DeclareNode::getName() {
     return id;
 }
 
-
 Value* DeclareNode::codegen(Compiler& c) {
-    if (c.localVariables[id]) {
-        cerr << "You can't redefine the variable" << endl;
-        return nullptr;
-    }
-
     llvm::Type* t = nullptr;
     switch (type){
         case TOK_TYPE_DOUBLE:
@@ -38,4 +32,14 @@ Value* DeclareNode::codegen(Compiler& c) {
     c.localVariables[id] = c.allocateVar(t, id);
     llvm::Value* initV = initVal ? initVal->codegen(c) : Constant::getNullValue(t);
     return c.Builder->CreateStore(initV, c.localVariables[id]);
+}
+
+bool DeclareNode::eval(Analyser& c) {
+    evalType = (type == TOK_TYPE_INT) ? INTEGER : FLOAT;
+    if (c.localSymbolTable[id]) {
+        cerr << "Redefined id: " << id << endl;
+        return false;
+    }
+    c.localSymbolTable[id] = evalType;
+    return true;
 }

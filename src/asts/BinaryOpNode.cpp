@@ -2,6 +2,18 @@
 #include "asts/BinaryOpNode.h"
 #include "asts/VariableNode.h"
 
+inline Value* castToSameType(Compiler& c, Value* storeValue) {
+    switch (storeValue->getType()->getTypeID()){
+        case Type::IntegerTyID:
+            storeValue = c.Builder->CreateSIToFP(storeValue, Type::getDoubleTy(*c.TheContext), "doubleTemp");
+        break;
+        default:
+            storeValue = c.Builder->CreateFPToSI(storeValue, Type::getInt32Ty(*c.TheContext), "intTemp");
+        break;
+    }
+    return storeValue;
+}
+
 BinaryOpNode::BinaryOpNode(BaseExpr* _lhs, TOKENS _op, BaseExpr* _rhs): lhs(_lhs), op(_op), rhs(_rhs) {}
 
 BinaryOpNode::~BinaryOpNode() {
@@ -19,21 +31,10 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         }
         Value* var = c.localVariables[lid->getName()]; 
         if (!var) var = c.globalVar[lid->getName()];
-        if (!var) {
-            cerr << "Unknow variable: " << lid->getName() << endl;
-            return nullptr;
-        }
         
         Value* storeValue = rhs->codegen(c);
         if (storeValue->getType() != var->getType()){
-            switch (storeValue->getType()->getTypeID()){
-                case Type::IntegerTyID:
-                    storeValue = c.Builder->CreateSIToFP(storeValue, Type::getDoubleTy(*c.TheContext), "doubleTemp");
-                    break;
-                default:
-                    storeValue = c.Builder->CreateFPToSI(storeValue, Type::getInt32Ty(*c.TheContext), "intTemp");
-                    break;
-            }
+            storeValue = castToSameType(c, storeValue);
         }
         c.Builder->CreateStore(storeValue, var);
         return var;
@@ -44,6 +45,9 @@ Value* BinaryOpNode::codegen(Compiler& c) {
     llvm::Value* rhsCode = rhs->codegen(c);
     if (!lhsCode || !rhsCode)
         return nullptr;
+    if (lhsCode->getType() != rhsCode->getType()){
+        rhsCode = castToSameType(c, rhsCode);
+    }
     switch (op){
         case TOK_OP_ADD:
             return c.Builder->CreateAdd(lhsCode, rhsCode, "addtmp");
@@ -70,4 +74,15 @@ Value* BinaryOpNode::codegen(Compiler& c) {
     }
     return nullptr;
     
+}
+
+bool BinaryOpNode::eval(Analyser& a) {
+    lhs->eval(a);
+    rhs->eval(a);
+    if (lhs->evalType != rhs->evalType) {
+        cerr << "Both side should have same type" << endl;
+        return false;
+    }
+    evalType = lhs->evalType;
+    return true;
 }

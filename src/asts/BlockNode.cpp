@@ -15,3 +15,11 @@ Value* BlockNode::codegen(Compiler& c) {
         e->codegen(c);
     }
 }
+
+bool BlockNode::eval(Analyser& c) {
+    bool result = true;
+    for (BaseExpr* e : expressions){
+        result = result && e->eval(c);
+    }
+    return result;
+}

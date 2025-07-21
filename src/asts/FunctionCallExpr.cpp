@@ -18,3 +18,12 @@ Value* FunctionCallExpr::codegen(Compiler& c) {
         argValues.push_back(arg->codegen(c));
     return c.Builder->CreateCall(f, argValues, "calltmp");
 }
+
+bool FunctionCallExpr::eval(Analyser& a) {
+    if (!a.globalSymbolTable[name]) {
+        cerr << "Undefined function: " << name << endl;
+        return false;
+    }
+    evalType = a.globalSymbolTable[name];
+    return true;
+}

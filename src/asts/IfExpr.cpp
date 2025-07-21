@@ -40,3 +40,10 @@ Value* IfExpr::codegen(Compiler& c) {
     c.Builder->SetInsertPoint(mergeBlock);
     return nullptr;
 }
+
+bool IfExpr::eval(Analyser& a) {
+    bool result = true;
+    if (thenBody)
+        result && thenBody->eval(a);
+    return result && cond->eval(a) && ifBody->eval(a);
+}
