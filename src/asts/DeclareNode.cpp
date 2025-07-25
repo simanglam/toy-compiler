@@ -41,10 +41,12 @@ bool DeclareNode::eval(Analyser& c) {
     }
 
     evalType = (type == TOK_TYPE_INT) ? INTEGER : FLOAT;
-    if (c.localSymbolTable[id]) {
+    if (id.length() != 0 && c.localSymbolTable[id]) {
         cerr << "Redefined id: " << id << endl;
         return false;
     }
-    c.localSymbolTable[id] = evalType;
+    if (id.length() != 0) {
+        c.localSymbolTable[id] = evalType;
+    }
     return true && result;
 }

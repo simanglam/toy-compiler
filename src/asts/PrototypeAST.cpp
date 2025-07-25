@@ -51,11 +51,29 @@ Function* PrototypeAST::codegen(Compiler& c) {
 }
 
 bool PrototypeAST::eval(Analyser& a) {
-    if (a.globalSymbolTable[name] != UNDIFINED){
+    if (a.functionTable.count(name)){
         cerr << "You can't redifined the function: " << name << endl;
         return false;
     }
     evalType = (returnType == TOK_TYPE_INT) ? INTEGER : FLOAT;
-    a.globalSymbolTable[name] = evalType;
+    FunctionInfo f;
+    for (DeclareNode* arg : args){
+        EVALTYPE e = UNDIFINED;
+        switch (arg->getType())
+        {
+        case TOK_TYPE_INT:
+            e = INTEGER;
+            break;
+        case TOK_TYPE_DOUBLE:
+            e = FLOAT;
+            break;
+        default:
+            e = UNDIFINED;
+            break;
+        }
+        f.argType.push_back(e);
+    }
+    f.returnType = evalType;
+    a.functionTable[name] = f;
     return true;
 }

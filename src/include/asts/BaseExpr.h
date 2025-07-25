@@ -9,7 +9,7 @@ class Compiler;
 class Analyser;
 
 enum EVALTYPE {
-    UNDIFINED, INTEGER, FLOAT, INTVAR, FLOATVAR
+    UNDIFINED, INTEGER, FLOAT, BOOL
 };
 
 class BaseExpr{

@@ -20,10 +20,22 @@ Value* FunctionCallExpr::codegen(Compiler& c) {
 }
 
 bool FunctionCallExpr::eval(Analyser& a) {
-    if (!a.globalSymbolTable[name]) {
+    bool result = true;
+    if (!a.functionTable.count(name)) {
         cerr << "Undefined function: " << name << endl;
         return false;
     }
-    evalType = a.globalSymbolTable[name];
+    if (a.functionTable[name].argType.size() != args.size()){
+        cerr << "Wrong number of args: " << name << endl;
+        return false;   
+    }
+    for (int i = 0; i < args.size(); i++){
+        result = result && args[i]->eval(a);
+        result = result && (args[i]->evalType == a.functionTable[name].argType[i]);
+        if (args[i]->evalType != a.functionTable[name].argType[i]){
+            cerr << "Wrong function argument." << endl;
+        }
+    }
+    evalType = a.functionTable[name].returnType;
     return true;
 }

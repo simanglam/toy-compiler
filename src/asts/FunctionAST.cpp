@@ -53,10 +53,10 @@ Function* FunctionAST::codegen(Compiler& c) {
 
 bool FunctionAST::eval(Analyser& a) {
     bool result = true;
-    if (a.globalSymbolTable[proto->getName()] == UNDIFINED){
+    if (!a.functionTable.count(proto->getName())){
         result = result && proto->eval(a);
     }
-    a.returnType = a.globalSymbolTable[proto->getName()];
+    a.returnType = a.functionTable[proto->getName()].returnType;
 
     for (auto arg : proto->getArgs()) {
         arg->eval(a);
