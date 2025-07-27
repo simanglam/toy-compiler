@@ -32,7 +32,7 @@ Value* GlobalDeclareNode::codegen(Compiler& c) {
     llvm::GlobalVariable *gVar = new llvm::GlobalVariable(
         *c.TheModule,
         type,
-        false,                              // isConstant
+        false,
         llvm::GlobalValue::ExternalLinkage,
         val,
         llvm::Twine(id.c_str())
@@ -42,7 +42,7 @@ Value* GlobalDeclareNode::codegen(Compiler& c) {
 }
 
 bool GlobalDeclareNode::eval(Analyser& a) {
-    evalType = (type == TOK_TYPE_INT) ? EVALTYPE::INTEGER : FLOAT;
+    evalType = (type == TOK_TYPE_INT) ? INTEGER : FLOAT;
     if (a.globalSymbolTable[id]) {
         cerr << "You can't redefined variable: " << id << endl;
         return false;
