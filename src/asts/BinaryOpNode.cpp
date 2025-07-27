@@ -63,15 +63,15 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         case TOK_OP_UNEQUAL:
             return c.Builder->CreateICmpNE(lhsCode, rhsCode, "uneqltemp");
         case TOK_OP_EQUAL:
-            return c.Builder->CreateICmpEQ(lhsCode, rhsCode, "uneqltemp");
+            return c.Builder->CreateICmpEQ(lhsCode, rhsCode, "eqltemp");
         case TOK_OP_LE:
-            return c.Builder->CreateICmpSLE(lhsCode, rhsCode, "uneqltemp");
+            return c.Builder->CreateICmpSLE(lhsCode, rhsCode, "leqtemp");
         case TOK_OP_LT:
-            return c.Builder->CreateICmpSLT(lhsCode, rhsCode, "uneqltemp");
+            return c.Builder->CreateICmpSLT(lhsCode, rhsCode, "ltemp");
         case TOK_OP_GE:
-            return c.Builder->CreateICmpSGE(lhsCode, rhsCode, "uneqltemp");
+            return c.Builder->CreateICmpSGE(lhsCode, rhsCode, "geqtemp");
         case TOK_OP_GT:
-            return c.Builder->CreateICmpSGT(lhsCode, rhsCode, "uneqltemp");
+            return c.Builder->CreateICmpSGT(lhsCode, rhsCode, "gttemp");
         default:
             break;
     }
