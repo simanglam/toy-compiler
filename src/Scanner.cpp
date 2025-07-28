@@ -118,8 +118,36 @@ Token Scanner::getToken(){
                 file >> nextChar;
             }
             else {
-                nextToken.type = TOK_ERROR;
+                nextToken.type = TOK_OP_NOT;
                 nextToken.strLiteral = "!";
+            }
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
+        case '&':
+            if (nextChar == '&'){
+                nextToken.type = TOK_OP_AND;
+                nextToken.strLiteral = "&&";
+                currentChar = nextChar;
+                file >> nextChar;
+            }
+            else {
+                nextToken.type = TOK_ERROR;
+                nextToken.strLiteral = "&";
+            }
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
+        case '|':
+            if (nextChar == '|'){
+                nextToken.type = TOK_OP_OR;
+                nextToken.strLiteral = "||";
+                currentChar = nextChar;
+                file >> nextChar;
+            }
+            else {
+                nextToken.type = TOK_ERROR;
+                nextToken.strLiteral = "|";
             }
             currentChar = nextChar;
             file >> nextChar;

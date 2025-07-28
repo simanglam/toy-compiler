@@ -105,6 +105,26 @@ Value* BinaryOpNode::codegen(Compiler& c) {
                 break;
         }
     }
+
+    if (lhs->evalType == FLOAT)
+        lhsCode = c.Builder->CreateFCmpONE(lhsCode, ConstantFP::get(lhsCode->getType(), 0.0), "fcmp");
+    else
+        lhsCode = c.Builder->CreateICmpNE(lhsCode, ConstantInt::get(lhsCode->getType(), 0), "icmp");
+    if (rhs->evalType == FLOAT)
+        rhsCode = c.Builder->CreateFCmpONE(rhsCode, ConstantFP::get(rhsCode->getType(), 0.0), "fcmp");
+    else
+        rhsCode = c.Builder->CreateICmpNE(rhsCode, ConstantInt::get(rhsCode->getType(), 0), "icmp");
+
+    switch (op) {
+        case TOK_OP_AND:            
+            returnVal = c.Builder->CreateLogicalAnd(lhsCode, rhsCode, "logicalAnd");
+        case TOK_OP_OR:
+            returnVal = c.Builder->CreateLogicalOr(lhsCode, rhsCode, "logicalAnd");
+
+        default:
+            break;
+    }
+
     return c.Builder->CreateIntCast(returnVal, Type::getInt32Ty(*c.TheContext), true, "intCast");
     
 }
@@ -112,16 +132,23 @@ Value* BinaryOpNode::codegen(Compiler& c) {
 bool BinaryOpNode::eval(Analyser& a) {
     lhs->eval(a);
     rhs->eval(a);
-    if (lhs->evalType != rhs->evalType){
-        if (op == TOK_OP_ASSIGN){
-            evalType = lhs->evalType;
+    if (op == TOK_OP_AND || op == TOK_OP_OR || 
+        op == TOK_OP_LT || op == TOK_OP_GT || 
+        op == TOK_OP_LE || op == TOK_OP_GE ||
+        op == TOK_OP_EQUAL || op == TOK_OP_UNEQUAL)
+        evalType = INTEGER;
+    else {
+        if (lhs->evalType != rhs->evalType){
+            if (op == TOK_OP_ASSIGN){
+                evalType = lhs->evalType;
+            }
+            else {
+                evalType = INTEGER;
+            }
         }
         else {
-            evalType = INTEGER;
+            evalType = lhs->evalType;
         }
-    }
-    else {
-        evalType = lhs->evalType;
     }
     return true;
 }

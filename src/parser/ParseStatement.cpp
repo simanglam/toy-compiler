@@ -17,7 +17,7 @@ BaseExpr* Parser::parseIf() {
     if (s.getToken().type != TOK_OP_LEFTPAR) {
         return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if");
     }
-    BaseExpr* cond = parsePrimary();
+    BaseExpr* cond = parseParExpression();
 
     if (!cond) {
         return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing cond");

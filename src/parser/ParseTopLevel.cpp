@@ -21,6 +21,7 @@ BaseExpr* Parser::parseLine() {
         break;
     case TOK_SEMI:
         s.getToken();
+        return parseLine();
         break;
     case TOK_TYPE_DOUBLE:
     case TOK_TYPE_INT:
@@ -76,28 +77,28 @@ BlockNode* Parser::parseBlock() {
 }
 
 BaseExpr* Parser::parsePrimary() {
-
     switch (s.currentToken.type){
-    case TOK_OP_MINUS:
-        return parseUnary();
-    case TOK_IF:
-        return parseIf();
-    case TOK_TYPE_INT:
-    case TOK_TYPE_DOUBLE:
-        return parseDeclare();
-    case TOK_INT:
-        return parseInteger();
-    case TOK_FLOAT:
-        return parseDouble();
-    case TOK_RETURN:
-        return parseReturn();
-    case TOK_IND:
-        return parseIndExpression();
-    case TOK_OP_LEFTPAR:
-        return parseParExpression();
-    case TOK_CUR_RIGHT:
-        return new IntegerExpr(0);
-    default:
-        return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing primary");
+        case TOK_OP_NOT:
+        case TOK_OP_MINUS:
+            return parseUnary();
+        case TOK_IF:
+            return parseIf();
+        case TOK_TYPE_INT:
+        case TOK_TYPE_DOUBLE:
+            return parseDeclare();
+        case TOK_INT:
+            return parseInteger();
+        case TOK_FLOAT:
+            return parseDouble();
+        case TOK_RETURN:
+            return parseReturn();
+        case TOK_IND:
+            return parseIndExpression();
+        case TOK_OP_LEFTPAR:
+            return parseParExpression();
+        case TOK_CUR_RIGHT:
+            return new IntegerExpr(0);
+        default:
+            return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing primary");
     }
 }

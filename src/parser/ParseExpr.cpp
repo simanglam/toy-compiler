@@ -10,21 +10,24 @@ static int getTokenPrec(const Token& t) {
     switch (t.type){
         case TOK_SEMI:
             return -1;
+        case TOK_OP_AND:
+        case TOK_OP_OR:
+            return 5;
         case TOK_OP_EQUAL:
         case TOK_OP_UNEQUAL:
         case TOK_OP_GE:
         case TOK_OP_GT:
         case TOK_OP_LE:
         case TOK_OP_LT:
-            return 5;
-        case TOK_OP_ASSIGN:
             return 10;
+        case TOK_OP_ASSIGN:
+            return 15;
         case TOK_OP_ADD:
         case TOK_OP_MINUS:
-            return 15;
+            return 20;
         case TOK_OP_DIVIDE:
         case TOK_OP_TIMES:
-            return 20;
+            return 25;
         default:
             return -1;
     }
