@@ -51,23 +51,18 @@ Value* BinaryOpNode::codegen(Compiler& c) {
     if (rhs->evalType != evalType) {
         rhsCode = castToSameType(c, evalType, rhsCode);
     }
-    switch (op){
-        case TOK_OP_ADD:
-            return c.Builder->CreateAdd(lhsCode, rhsCode, "addtmp");
-        case TOK_OP_MINUS:
-            return c.Builder->CreateSub(lhsCode, rhsCode, "subtmp");
-        case TOK_OP_TIMES:
-            return c.Builder->CreateMul(lhsCode, rhsCode, "timetmp");
-        case TOK_OP_DIVIDE:
-            return c.Builder->CreateSDiv(lhsCode, rhsCode, "divtmp");
-        default:
-            break;
-    }
 
     Value* returnVal = nullptr;
     if (rhs->evalType == INTEGER) {
-        switch (op)
-        {
+        switch (op) {
+            case TOK_OP_ADD:
+                return c.Builder->CreateAdd(lhsCode, rhsCode, "addtmp");
+            case TOK_OP_MINUS:
+                return c.Builder->CreateSub(lhsCode, rhsCode, "subtmp");
+            case TOK_OP_TIMES:
+                return c.Builder->CreateMul(lhsCode, rhsCode, "timetmp");
+            case TOK_OP_DIVIDE:
+                return c.Builder->CreateSDiv(lhsCode, rhsCode, "divtmp");
             case TOK_OP_UNEQUAL:
                 returnVal = c.Builder->CreateICmpNE(lhsCode, rhsCode, "uneqltemp");
             case TOK_OP_EQUAL:
@@ -85,8 +80,15 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         }
     }
     if (rhs->evalType == FLOAT) {
-        switch (op)
-        {
+        switch (op){
+            case TOK_OP_ADD:
+                return c.Builder->CreateFAdd(lhsCode, rhsCode, "addtmp");
+            case TOK_OP_MINUS:
+                return c.Builder->CreateFSub(lhsCode, rhsCode, "subtmp");
+            case TOK_OP_TIMES:
+                return c.Builder->CreateFMul(lhsCode, rhsCode, "timetmp");
+            case TOK_OP_DIVIDE:
+                return c.Builder->CreateFDiv(lhsCode, rhsCode, "divtmp");
             case TOK_OP_UNEQUAL:
                 returnVal = c.Builder->CreateFCmpONE(lhsCode, rhsCode, "uneqltemp");
             case TOK_OP_EQUAL:
