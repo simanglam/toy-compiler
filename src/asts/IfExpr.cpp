@@ -21,11 +21,12 @@ Value* IfExpr::codegen(Compiler& c) {
     BasicBlock* mergeBlock = BasicBlock::Create(*c.TheContext, "ifcont");
     Value* v = cond->codegen(c);
     if (!v) return nullptr;
-    if (v->getType()->getTypeID() != Type::TypeID::IntegerTyID) {
-        v = c.Builder->CreateTrunc(v, Type::getInt8Ty(*c.TheContext), "trunc");
+    if (cond->evalType != INTEGER) {
+        v = c.Builder->CreateFCmpONE(v, ConstantFP::get(v->getType(), 0.0), "ifcond");
     }
-
-    v = c.Builder->CreateICmpNE(v, ConstantInt::get(v->getType(), 0, true), "ifcond");
+    else {
+        v = c.Builder->CreateICmpNE(v, ConstantInt::get(v->getType(), 0, true), "ifcond");
+    }
     c.Builder->CreateCondBr(v, thenBlock, elseBlock);
     c.Builder->SetInsertPoint(thenBlock);
     ifBody->codegen(c);
