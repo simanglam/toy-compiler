@@ -15,6 +15,7 @@
 #include "include/Scanner.h"
 #include "include/Token.h"
 #include "include/Parser.h"
+#include "include/Analyser.h"
 
 
 static map<int, int> opTable;
@@ -24,6 +25,7 @@ int main(int argc, char ** argv){
     Scanner s(filename);
     Parser p(s);
     Compiler c(p);
+    Analyser a;
     BaseExpr* ast = nullptr;
     auto TargetTriple = sys::getDefaultTargetTriple();
     InitializeAllTargetInfos();
@@ -48,6 +50,7 @@ int main(int argc, char ** argv){
     c.TheModule->setTargetTriple(TargetTriple);
 
     while ((ast = p.parseLine()) != nullptr){
+        ast->eval(a);
         ast->codegen(c);
         delete ast;
     }
