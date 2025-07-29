@@ -1,13 +1,14 @@
 #ifndef __Compiler_Header__
 #define __Compiler_Header__
 class Compiler;
+class Parser;
 
 #include <map>
 #include <llvm/IR/Value.h>
 #include <llvm/IR/Module.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
-#include <Parser.h>
+#include "Parser.h"
 
 using namespace llvm;
 
