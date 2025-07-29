@@ -27,10 +27,12 @@ bool FunctionCallExpr::eval(Analyser& a) {
     }
     if (a.functionTable[name].argType.size() != args.size()){
         cerr << "Wrong number of args: " << name << endl;
-        return false;   
+        return false;
     }
     for (int i = 0; i < args.size(); i++){
         result = result && args[i]->eval(a);
+    }
+    for (int i = 0; i < args.size(); i++){
         result = result && (args[i]->evalType == a.functionTable[name].argType[i]);
         if (args[i]->evalType != a.functionTable[name].argType[i]){
             cerr << "Wrong function argument." << endl;

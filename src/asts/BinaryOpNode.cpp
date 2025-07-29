@@ -132,8 +132,8 @@ Value* BinaryOpNode::codegen(Compiler& c) {
 }
 
 bool BinaryOpNode::eval(Analyser& a) {
-    lhs->eval(a);
-    rhs->eval(a);
+    bool result = lhs->eval(a);
+    result = result && rhs->eval(a);
     if (op == TOK_OP_AND || op == TOK_OP_OR || 
         op == TOK_OP_LT || op == TOK_OP_GT || 
         op == TOK_OP_LE || op == TOK_OP_GE ||
@@ -152,5 +152,5 @@ bool BinaryOpNode::eval(Analyser& a) {
             evalType = lhs->evalType;
         }
     }
-    return true;
+    return result;
 }
