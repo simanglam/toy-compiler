@@ -12,7 +12,8 @@ class Compiler;
 using namespace llvm;
 
 class Compiler {
-    Parser& p;
+    Parser p;
+    Scanner s;
 public:
     std::unique_ptr<llvm::LLVMContext> TheContext;
     std::unique_ptr<llvm::Module> TheModule;
@@ -20,11 +21,10 @@ public:
     std::map<std::string, llvm::AllocaInst*> localVariables;
     std::map<std::string, llvm::GlobalVariable*> globalVar;
     Function* currentFunction;
-    void compileToASM();
-    void compileToIR();
+    bool compile();
 
     AllocaInst* allocateVar(llvm::Type*, string&);
-    Compiler(Parser&);
+    Compiler(string&);
     ~Compiler();
 };
 
