@@ -5,15 +5,14 @@
 
 class Scanner{
 private:
-    string fileName;
-    fstream file;
+    fstream& file;
     int currentLine;
     char currentChar;
     char nextChar;
 public:
     Token currentToken;
     Token nextToken;
-    Scanner(string);
+    Scanner(fstream&);
     ~Scanner();
     Token getToken();
     Token peekToken();
