@@ -29,10 +29,10 @@ Value* VariableNode::codegen(Compiler& c) {
 };
 
 bool VariableNode::eval(Analyser& a) {
-    if (!(a.localSymbolTable[name] || a.globalSymbolTable[name])){
+    if ((!a.localSymbolTable.count(name) && !a.globalSymbolTable.count(name))){
         cerr << "Unknown variable: " << name << endl;
         return false;
     }
-    evalType = (a.localSymbolTable[name]) ? a.localSymbolTable[name] : a.globalSymbolTable[name];
+    evalType = a.localSymbolTable.count(name) ? a.localSymbolTable[name] : a.globalSymbolTable[name];
     return true;
 }
