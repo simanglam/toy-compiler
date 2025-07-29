@@ -18,7 +18,7 @@ inline bool isAlpha(int c){
     return ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
 }
 
-Scanner::Scanner(fstream& _file): file(_file), nextChar(' '), currentChar(' '), currentLine(1){
+Scanner::Scanner(istream& _file): file(_file), nextChar(' '), currentChar(' '), currentLine(1){
     file.unsetf(ios_base::skipws);
     getToken();
 }
