@@ -15,6 +15,7 @@ using namespace llvm;
 class Compiler {
     Parser p;
     Scanner s;
+    string name;
 public:
     std::unique_ptr<llvm::LLVMContext> TheContext;
     std::unique_ptr<llvm::Module> TheModule;
@@ -23,6 +24,7 @@ public:
     std::map<std::string, llvm::GlobalVariable*> globalVar;
     Function* currentFunction;
     bool compile();
+    bool writeToFile();
 
     AllocaInst* allocateVar(llvm::Type*, string&);
     Compiler(string&);
