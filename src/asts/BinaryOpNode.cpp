@@ -118,8 +118,10 @@ Value* BinaryOpNode::codegen(Compiler& c) {
     switch (op) {
         case TOK_OP_AND:            
             returnVal = c.Builder->CreateLogicalAnd(lhsCode, rhsCode, "logicalAnd");
+            break;
         case TOK_OP_OR:
             returnVal = c.Builder->CreateLogicalOr(lhsCode, rhsCode, "logicalAnd");
+            break;
 
         default:
             break;
