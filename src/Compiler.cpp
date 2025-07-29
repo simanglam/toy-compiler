@@ -9,10 +9,7 @@
 
 #include "Compiler.h"
 
-Compiler::Compiler(string& fileName): s(fileName), p(s), name(fileName) {
-    TheContext = std::make_unique<llvm::LLVMContext>();
-    TheModule = std::make_unique<Module>(fileName, *TheContext);
-    Builder = std::make_unique<IRBuilder<>>(*TheContext);
+Compiler::Compiler(CommandLineOptions& _options): options(_options) {
     
 }
 
@@ -23,13 +20,21 @@ Compiler::~Compiler() {
 bool Compiler::compile() {
     BaseExpr* ast;
     Analyser a;
+    TheContext = std::make_unique<llvm::LLVMContext>();
+    TheModule = std::make_unique<Module>("", *TheContext);
+    Builder = std::make_unique<IRBuilder<>>(*TheContext);
+    string inputFile = options.inputs[0];
+    fstream f(inputFile);
+    Scanner s(f);
+    Parser p(s);
     bool result = true;
     while ((ast = p.parseLine()) != nullptr){
         result = result && ast->eval(a);
+        cerr << "OK" << endl;
         ast->codegen(*this);
         delete ast;
     }
-    return result;
+    return writeToFile();
 }
 
 bool Compiler::writeToFile() {
@@ -55,7 +60,7 @@ bool Compiler::writeToFile() {
     TheModule->setTargetTriple(TargetTriple);
 
     TheModule.get()->print(outs(), nullptr);
-    auto outputFilename = name.substr(0, name.find_last_of('.')) + ".s";
+    auto outputFilename = "output.s";
     std::error_code EC;
     raw_fd_ostream dest(outputFilename, EC, sys::fs::OF_None);
 
@@ -67,12 +72,16 @@ bool Compiler::writeToFile() {
     legacy::PassManager pass;
     auto FileType = CodeGenFileType::AssemblyFile;
 
+
     if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
         errs() << "TargetMachine can't emit a file of this type";
         return false;
     }
     pass.run(*TheModule);
     dest.flush();
+
+    delete TargetMachine;
+
 }
 
 

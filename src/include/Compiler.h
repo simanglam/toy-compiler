@@ -8,14 +8,14 @@ class Parser;
 #include <llvm/IR/Module.h>
 #include <llvm/IR/LLVMContext.h>
 #include <llvm/IR/IRBuilder.h>
+
+#include "CommandLineOptions.h"
 #include "Parser.h"
 
 using namespace llvm;
 
 class Compiler {
-    Parser p;
-    Scanner s;
-    string name;
+    CommandLineOptions& options;
 public:
     std::unique_ptr<llvm::LLVMContext> TheContext;
     std::unique_ptr<llvm::Module> TheModule;
@@ -27,7 +27,7 @@ public:
     bool writeToFile();
 
     AllocaInst* allocateVar(llvm::Type*, string&);
-    Compiler(string&);
+    Compiler(CommandLineOptions&);
     ~Compiler();
 };
 
