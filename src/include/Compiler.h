@@ -17,9 +17,9 @@ using namespace llvm;
 class Compiler {
     CommandLineOptions& options;
 public:
-    std::unique_ptr<llvm::LLVMContext> TheContext;
-    std::unique_ptr<llvm::Module> TheModule;
-    std::unique_ptr<IRBuilder<>> Builder;
+    llvm::LLVMContext* TheContext;
+    llvm::Module* TheModule;
+    IRBuilder<>* Builder;
     std::map<std::string, llvm::AllocaInst*> localVariables;
     std::map<std::string, llvm::GlobalVariable*> globalVar;
     Function* currentFunction;
