@@ -134,23 +134,34 @@ Value* BinaryOpNode::codegen(Compiler& c) {
 bool BinaryOpNode::eval(Analyser& a) {
     bool result = lhs->eval(a);
     result = result && rhs->eval(a);
-    if (op == TOK_OP_AND || op == TOK_OP_OR || 
-        op == TOK_OP_LT || op == TOK_OP_GT || 
-        op == TOK_OP_LE || op == TOK_OP_GE ||
-        op == TOK_OP_EQUAL || op == TOK_OP_UNEQUAL)
-        evalType = INTEGER;
-    else {
-        if (lhs->evalType != rhs->evalType){
-            if (op == TOK_OP_ASSIGN){
-                evalType = lhs->evalType;
+
+    switch (op) {    
+        case TOK_OP_AND:
+        case TOK_OP_OR: 
+        case TOK_OP_LT:
+        case TOK_OP_GT: 
+        case TOK_OP_LE:
+        case TOK_OP_GE:
+        case TOK_OP_EQUAL:
+        case TOK_OP_UNEQUAL:
+            evalType = INTEGER;
+            break;
+        case TOK_OP_ASSIGN:
+            evalType = lhs->evalType;
+            break;
+        default:
+            if (lhs->evalType != rhs->evalType){
+                if (op == TOK_OP_ASSIGN){
+                    evalType = lhs->evalType;
+                }
+                else {
+                    evalType = INTEGER;
+                }
             }
             else {
-                evalType = INTEGER;
+                evalType = lhs->evalType;
             }
-        }
-        else {
-            evalType = lhs->evalType;
-        }
+            break;
     }
     return result;
 }
