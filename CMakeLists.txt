@@ -5,6 +5,7 @@ project(toycompiler)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_ARCHITECTURES arm64)
+set(COMPILE_FLAGS debug)
 
 find_package(LLVM REQUIRED CONFIG)
 
