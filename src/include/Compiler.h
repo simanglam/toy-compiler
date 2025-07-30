@@ -24,7 +24,7 @@ public:
     std::map<std::string, llvm::GlobalVariable*> globalVar;
     Function* currentFunction;
     bool compile();
-    bool writeToFile();
+    bool writeToFile(outputType, string&);
 
     AllocaInst* allocateVar(llvm::Type*, string&);
     Compiler(CommandLineOptions&);

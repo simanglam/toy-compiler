@@ -23,21 +23,35 @@ bool Compiler::compile() {
     TheContext = std::make_unique<llvm::LLVMContext>();
     TheModule = std::make_unique<Module>("", *TheContext);
     Builder = std::make_unique<IRBuilder<>>(*TheContext);
-    string inputFile = options.inputs[0];
-    fstream f(inputFile);
-    Scanner s(f);
-    Parser p(s);
-    bool result = true;
-    while ((ast = p.parseLine()) != nullptr){
-        result = result && ast->eval(a);
-        cerr << "OK" << endl;
-        ast->codegen(*this);
-        delete ast;
+    if (options.inputs.size() != 0) {
+        for (string file : options.inputs) {
+            fstream f(file);
+            Scanner s(f);
+            Parser p(s);
+            bool result = true;
+            while ((ast = p.parseLine()) != nullptr){
+                result = result && ast->eval(a);
+                ast->codegen(*this);
+                delete ast;
+            }
+            writeToFile(options.outputFileType, file);
+        }
     }
-    return writeToFile();
+    else {
+        Scanner s(cin);
+        Parser p(s);
+        bool result = true;
+        while ((ast = p.parseLine()) != nullptr){
+            result = result && ast->eval(a);
+            ast->codegen(*this);
+            delete ast;
+        }
+        string outputFileName("output.txt");
+        writeToFile(options.outputFileType, outputFileName);
+    }
 }
 
-bool Compiler::writeToFile() {
+bool Compiler::writeToFile(outputType outputFileType, string& fileName) {
     auto TargetTriple = sys::getDefaultTargetTriple();
     InitializeAllTargetInfos();
     InitializeAllTargets();
@@ -59,8 +73,23 @@ bool Compiler::writeToFile() {
     TheModule->setDataLayout(TargetMachine->createDataLayout());
     TheModule->setTargetTriple(TargetTriple);
 
-    TheModule.get()->print(outs(), nullptr);
-    auto outputFilename = "output.s";
+    auto outputFilename = fileName.substr(0, fileName.find_last_of('.'));
+    auto FileType = CodeGenFileType::Null;
+
+    switch (outputFileType) {
+        case ASM:
+            outputFilename += ".s";
+            FileType = CodeGenFileType::AssemblyFile;
+            break;
+        case OBJECT_FILE:
+            outputFilename += ".o";
+            FileType = CodeGenFileType::ObjectFile;
+            break;
+        case LLVM_IR:
+            outputFilename += ".ll";
+            break;
+    }
+
     std::error_code EC;
     raw_fd_ostream dest(outputFilename, EC, sys::fs::OF_None);
 
@@ -70,15 +99,18 @@ bool Compiler::writeToFile() {
     }
 
     legacy::PassManager pass;
-    auto FileType = CodeGenFileType::AssemblyFile;
 
-
-    if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
-        errs() << "TargetMachine can't emit a file of this type";
-        return false;
+    if (FileType != CodeGenFileType::Null) {
+        if (TargetMachine->addPassesToEmitFile(pass, dest, nullptr, FileType)) {
+            errs() << "TargetMachine can't emit a file of this type";
+            return false;
+        }
+        pass.run(*TheModule);
+        dest.flush();
     }
-    pass.run(*TheModule);
-    dest.flush();
+    else {
+        TheModule->print(dest, nullptr);
+    }
 
     delete TargetMachine;
 
