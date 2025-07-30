@@ -46,7 +46,7 @@ Function* PrototypeAST::codegen(Compiler& c) {
     }
 
     FunctionType* FT = FunctionType::get(returnType, Args, false);
-    Function* F = Function::Create(FT, GlobalValue::ExternalLinkage, llvm::Twine(name), c.TheModule.get());
+    Function* F = Function::Create(FT, GlobalValue::ExternalLinkage, llvm::Twine(name), c.TheModule);
     return F;
 }
 
