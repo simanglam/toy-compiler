@@ -16,7 +16,7 @@ class CommandLineOptions {
 public:
     vector<string> inputs;
     outputType outputFileType = LLVM_IR;
-    int optimizionLevel = 0;
+    int optimizationLevel = 0;
      
 };
 

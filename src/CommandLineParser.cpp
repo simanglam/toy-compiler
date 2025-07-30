@@ -12,25 +12,25 @@ void parseCommandLine(char** commandLineArgs, int argsNum, CommandLineOptions& o
             if (i + 1 > argsNum)
                 break;
             if (arg.substr(1, arg.size()) == "O0") {
-                options.optimizionLevel = 0;
+                options.optimizationLevel = 0;
             }
             else if (arg.substr(1, arg.size()) == "O1") {
-                options.optimizionLevel = 1;
+                options.optimizationLevel = 1;
             }
             else if (arg.substr(1, arg.size()) == "O2") {
-                options.optimizionLevel = 2;
+                options.optimizationLevel = 2;
             }
             else if (arg.substr(1, arg.size()) == "O3") {
-                options.optimizionLevel = 3;
+                options.optimizationLevel = 3;
             }
             else if (arg.substr(1, arg.size()) == "S") {
                 options.outputFileType = ASM;
             }
             else if (arg.substr(1, arg.size()) == "C") {
-                options.optimizionLevel = OBJECT_FILE;
+                options.outputFileType = OBJECT_FILE;
             }
             else if (arg.substr(1, arg.size()) == "I") {
-                options.optimizionLevel = LLVM_IR;
+                options.outputFileType = LLVM_IR;
             }
         }
         else {
