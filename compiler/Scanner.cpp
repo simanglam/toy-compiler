@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 
-#include "include/Scanner.h"
+#include "Scanner.h"
 
 inline bool isWhiteSpace(int c){
     return (c == ' ' || c == '\n');

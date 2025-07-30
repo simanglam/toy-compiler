@@ -1,8 +1,9 @@
-#include <string>
 #include <iostream>
-#include "CommandLineParser.h"
+#include <fstream>
+#include <string>
+#include <map>
 
-using namespace std;
+#include "Compiler.h"
 
 void parseCommandLine(char** commandLineArgs, int argsNum, CommandLineOptions& options){
     int i = 1;
@@ -38,4 +39,12 @@ void parseCommandLine(char** commandLineArgs, int argsNum, CommandLineOptions& o
         }
         ++i;
     }
+}
+
+int main(int argc, char ** argv){
+    string filename = "./test.txt";
+    CommandLineOptions options;
+    parseCommandLine(argv, argc, options);
+    Compiler c(options);
+    c.compile();
 }
