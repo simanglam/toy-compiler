@@ -19,15 +19,15 @@ Compiler::~Compiler() {
 
 bool Compiler::compile() {
     BaseExpr* ast;
-    Analyser a;
-    TheContext = std::make_unique<llvm::LLVMContext>();
-    TheModule = std::make_unique<Module>("", *TheContext);
-    Builder = std::make_unique<IRBuilder<>>(*TheContext);
     if (options.inputs.size() != 0) {
         for (string file : options.inputs) {
             fstream f(file);
             Scanner s(f);
             Parser p(s);
+            Analyser a;
+            TheContext = new llvm::LLVMContext();
+            TheModule = new Module(file, *TheContext);
+            Builder = new IRBuilder<>(*TheContext);
             bool result = true;
             while ((ast = p.parseLine()) != nullptr){
                 result = result && ast->eval(a);
@@ -35,12 +35,19 @@ bool Compiler::compile() {
                 delete ast;
             }
             writeToFile(options.outputFileType, file);
+            delete TheModule;
+            delete Builder;
+            delete TheContext;
         }
     }
     else {
         Scanner s(cin);
         Parser p(s);
+        Analyser a;
         bool result = true;
+        TheContext = new llvm::LLVMContext();
+        TheModule = new Module("STDIN", *TheContext);
+        Builder = new IRBuilder<>(*TheContext);
         while ((ast = p.parseLine()) != nullptr){
             result = result && ast->eval(a);
             ast->codegen(*this);
@@ -48,6 +55,9 @@ bool Compiler::compile() {
         }
         string outputFileName("output.txt");
         writeToFile(options.outputFileType, outputFileName);
+        delete TheModule;
+        delete Builder;
+        delete TheContext;
     }
 }
 
