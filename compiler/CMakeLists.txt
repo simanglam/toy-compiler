@@ -17,5 +17,5 @@ target_compile_options(analyser PRIVATE --debug)
 add_library(commandLineParser CommandLineParser.cpp)
 target_compile_options(commandLineParser PRIVATE --debug)
 
-target_link_libraries(compiler analyser scanner asts parser commandLineParser ${MyOption} LLVM-20)
+target_link_libraries(compiler analyser scanner asts parser commandLineParser ${LLVM_LIB_PATH} ${LLVM_LIB})
 
