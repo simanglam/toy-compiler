@@ -20,12 +20,9 @@ Value* VariableNode::codegen(Compiler& c) {
         return c.Builder->CreateLoad(c.globalVar[name]->getValueType(), var, name.c_str());
     }
 
-    if (!var) {
-        cerr << "Unknown Variable: " << name << endl;
-        return nullptr;
-    }
-    return c.Builder->CreateLoad(c.localVariables[name]->getAllocatedType(), var, name.c_str());
-    
+
+    cerr << "Unknown Variable: " << name << endl;
+    return nullptr;
 };
 
 bool VariableNode::eval(Analyser& a) {
