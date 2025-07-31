@@ -36,8 +36,7 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         if (lhs->evalType != rhs->evalType){
             storeValue = castToSameType(c, lhs->evalType, storeValue);
         }
-        c.Builder->CreateStore(storeValue, var);
-        return var;
+        return c.Builder->CreateStore(storeValue, var);
     }
     
 
@@ -132,8 +131,12 @@ Value* BinaryOpNode::codegen(Compiler& c) {
 }
 
 bool BinaryOpNode::eval(Analyser& a) {
-    bool result = lhs->eval(a);
-    result = result && rhs->eval(a);
+    bool lhsEval = lhs->eval(a);
+    bool rhsEval = rhs->eval(a);
+    bool result = true;
+
+    if (!lhsEval || !rhsEval)
+        result = false;
 
     switch (op) {    
         case TOK_OP_AND:
