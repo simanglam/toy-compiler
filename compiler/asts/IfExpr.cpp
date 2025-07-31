@@ -45,7 +45,10 @@ Value* IfExpr::codegen(Compiler& c) {
 
 bool IfExpr::eval(Analyser& a) {
     bool result = true;
+    result = cond->eval(a) && result;
+    result = ifBody->eval(a) && result;
+    
     if (thenBody)
-        result && thenBody->eval(a);
-    return result && cond->eval(a) && ifBody->eval(a);
+        result = thenBody->eval(a) && result;
+    return result;
 }
