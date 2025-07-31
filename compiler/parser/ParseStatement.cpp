@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include "asts/ArrayDeclare.h"
 #include "asts/DeclareNode.h"
 #include "asts/GlobalDeclareNode.h"
 #include "asts/PrototypeAST.h"
@@ -57,7 +58,7 @@ BaseExpr* Parser::parseIf() {
 
 }
 
-DeclareNode* Parser::parseDeclare() {
+BaseExpr* Parser::parseDeclare() {
     TOKENS type = s.currentToken.type;
     s.getToken();
     if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
@@ -66,11 +67,32 @@ DeclareNode* Parser::parseDeclare() {
 
     string name = s.currentToken.strLiteral;
     s.getToken();
-    DeclareNode* node = nullptr;
+    BaseExpr* node = nullptr;
 
     if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
         node = new DeclareNode(name, type, parseExpression());
+    }
+    else if (s.currentToken.type == TOK_OP_LEFTBRA) {
+        s.getToken();
+        BaseExpr* arraySizeExpr = nullptr;
+        if (s.currentToken.type != TOK_OP_RIGHTPAR)
+            arraySizeExpr = parsePrimary();
+
+        // cerr << "An array with size: " << arraySize << endl;
+
+        vector<BaseExpr*> initVals;
+        if (s.getToken().type == TOK_OP_ASSIGN) {
+            assert(s.getToken().type == TOK_CUR_LEFT);
+            while (s.getToken().type != TOK_CUR_RIGHT){
+                initVals.push_back(parsePrimary());
+                assert(s.currentToken.type == TOK_COMMA);
+            }
+            assert(s.getToken().type == TOK_SEMI);
+            node = new ArrayDeclare(type, initVals, arraySizeExpr, name);
+        }
+        else
+            node = new ArrayDeclare(type, initVals, arraySizeExpr, name);
     }
     else {
         node = new DeclareNode(name, type);
@@ -82,7 +104,7 @@ DeclareNode* Parser::parseDeclare() {
 
     if (s.currentToken.type != TOK_SEMI) {
         s.getToken();
-        return (DeclareNode*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
+        return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
     }
     return node;
 }

@@ -21,7 +21,7 @@ private:
     BaseExpr* parseGlobalDeclare();
     BaseExpr* parseBinOpRhs(int, BaseExpr*);
     BaseExpr* parseFunction(string, TOKENS);
-    DeclareNode* parseDeclare();
+    BaseExpr* parseDeclare();
     BlockNode* parseBlock();
     BaseExpr* parseReturn();
     DeclareNode* parseFunctionDeclare();
