@@ -46,9 +46,11 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         return nullptr;
     if (lhs->evalType != evalType) {
         lhsCode = castToSameType(c, evalType, lhsCode);
+        lhs->evalType = evalType;
     }
     if (rhs->evalType != evalType) {
         rhsCode = castToSameType(c, evalType, rhsCode);
+        rhs->evalType = evalType;
     }
 
     Value* returnVal = nullptr;
@@ -154,12 +156,7 @@ bool BinaryOpNode::eval(Analyser& a) {
             break;
         default:
             if (lhs->evalType != rhs->evalType){
-                if (op == TOK_OP_ASSIGN){
-                    evalType = lhs->evalType;
-                }
-                else {
-                    evalType = INTEGER;
-                }
+                evalType = INTEGER;
             }
             else {
                 evalType = lhs->evalType;
