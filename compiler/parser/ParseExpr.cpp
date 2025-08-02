@@ -28,6 +28,8 @@ static int getTokenPrec(const Token& t) {
         case TOK_OP_DIVIDE:
         case TOK_OP_TIMES:
             return 25;
+        case TOK_OP_LEFTBRA:
+            return 30;
         default:
             return -1;
     }
@@ -96,6 +98,8 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
         }
         
         lhs = new BinaryOpNode(lhs, op, rhs);
+        if (op == TOK_OP_LEFTBRA)
+            s.getToken();
     }
 }
 

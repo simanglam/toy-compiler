@@ -22,12 +22,16 @@ Value* ArrayDeclare::codegen(Compiler& c) {
     default:
         break;
     }
-    AllocaInst* arrayAlloc = c.allocateArray(type, size->codegen(c), name);
-    c.localVariables[name] = arrayAlloc;
+    string old_name = name;
+    AllocaInst* arrayPointer = c.allocateVar(type->getPointerTo(), (name.append("body")));
+    AllocaInst* arrayAlloc = c.allocateArray(type, size->codegen(c), old_name);
+    c.localVariables[old_name] = arrayPointer;
+    c.Builder->CreateStore(arrayAlloc, arrayPointer);
     
-    return arrayAlloc;
+    return arrayPointer;
 }
 
 bool ArrayDeclare::eval(Analyser& a) {
     a.localSymbolTable[name] = INTEGER;
+    return true;
 }
