@@ -1,4 +1,8 @@
 #include "asts/PrototypeAST.h"
+#include "asts/Expression.h"
+
+#include "Compiler.h"
+#include "Analyser.h"
 
 PrototypeAST::PrototypeAST(string _name, vector<DeclareNode*> _args, TOKENS _returnType): name(_name), args(_args), returnType(_returnType) {}
 
@@ -15,7 +19,7 @@ vector<DeclareNode*>& PrototypeAST::getArgs() {
     return args;
 }
 
-Function* PrototypeAST::codegen(Compiler& c) {
+void PrototypeAST::codegen(Compiler& c) {
     vector<llvm::Type*> Args;
 
     for (DeclareNode* node : args) {
@@ -47,7 +51,6 @@ Function* PrototypeAST::codegen(Compiler& c) {
 
     FunctionType* FT = FunctionType::get(returnType, Args, false);
     Function* F = Function::Create(FT, GlobalValue::ExternalLinkage, llvm::Twine(name), c.TheModule);
-    return F;
 }
 
 bool PrototypeAST::eval(Analyser& a) {
@@ -55,7 +58,7 @@ bool PrototypeAST::eval(Analyser& a) {
         cerr << "You can't redifined the function: " << name << endl;
         return false;
     }
-    evalType = (returnType == TOK_TYPE_INT) ? INTEGER : FLOAT;
+    EVALTYPE evalType = (returnType == TOK_TYPE_INT) ? INTEGER : FLOAT;
     FunctionInfo f;
     for (DeclareNode* arg : args){
         EVALTYPE e = UNDIFINED;

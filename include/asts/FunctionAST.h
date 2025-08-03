@@ -12,13 +12,13 @@ class FunctionAST;
 using namespace llvm;
 
 
-class FunctionAST: public Expression {
+class FunctionAST: public Statement {
     PrototypeAST* proto;
     BlockNode* body;
 public:
     FunctionAST(PrototypeAST*, BlockNode*);
     ~FunctionAST();
-    Function* codegen(Compiler&) override;
+    void codegen(Compiler&) override;
     bool eval(Analyser&) override;
 };
 
