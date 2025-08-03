@@ -8,9 +8,9 @@
 #include "asts/IfStatement.h"
 #include "asts/ErrorExpr.h"
 
-Expression* Parser::parseReturn() {
+Statement* Parser::parseReturn() {
     s.getToken();
-    Expression* node = new ReturnStatement(parseExpression());
+    Statement* node = new ReturnStatement(parseExpression());
     return node;
 }
 
@@ -59,7 +59,7 @@ Statement* Parser::parseIf() {
 
 }
 
-Expression* Parser::parseDeclare() {
+Statement* Parser::parseDeclare() {
     TOKENS type = s.currentToken.type;
     s.getToken();
     if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
@@ -68,7 +68,7 @@ Expression* Parser::parseDeclare() {
 
     string name = s.currentToken.strLiteral;
     s.getToken();
-    Expression* node = nullptr;
+    Statement* node = nullptr;
 
     if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
@@ -105,7 +105,7 @@ Expression* Parser::parseDeclare() {
 
     if (s.currentToken.type != TOK_SEMI) {
         s.getToken();
-        return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
+        return (Statement*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
     }
     return node;
 }

@@ -13,6 +13,7 @@ class ASTNode;
 class Parser{
 private:
     Scanner& s;
+    ASTNode* parseLinePrimary();
     Expression* parsePrimary();
     Expression* parseUnary();
     Expression* parseIndExpression();
@@ -20,12 +21,12 @@ private:
     Expression* parseExpression();
     Expression* parseInteger();
     Expression* parseDouble();
-    Expression* parseGlobalDeclare();
     Expression* parseBinOpRhs(int, Expression*);
-    Expression* parseFunction(string, TOKENS);
-    Expression* parseDeclare();
     BlockNode* parseBlock();
-    Expression* parseReturn();
+    Statement* parseReturn();
+    Statement* parseFunction(string, TOKENS);
+    Statement* parseGlobalDeclare();
+    Statement* parseDeclare();
     DeclareNode* parseFunctionDeclare();
     Statement* parseIf();
 

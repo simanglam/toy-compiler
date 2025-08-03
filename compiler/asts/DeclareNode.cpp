@@ -20,7 +20,7 @@ string& DeclareNode::getName() {
     return id;
 }
 
-Value* DeclareNode::codegenExpr(Compiler& c) {
+void DeclareNode::codegen(Compiler& c) {
     llvm::Type* t = nullptr;
     switch (type){
         case TOK_TYPE_DOUBLE:
@@ -35,7 +35,7 @@ Value* DeclareNode::codegenExpr(Compiler& c) {
 
     c.localVariables[id] = c.allocateVar(t, id);
     llvm::Value* initV = initVal ? initVal->codegenExpr(c) : Constant::getNullValue(t);
-    return c.Builder->CreateStore(initV, c.localVariables[id]);
+    c.Builder->CreateStore(initV, c.localVariables[id]);
 }
 
 bool DeclareNode::eval(Analyser& c) {
@@ -44,7 +44,7 @@ bool DeclareNode::eval(Analyser& c) {
         result = initVal->eval(c);
     }
 
-    evalType = (type == TOK_TYPE_INT) ? INTEGER : FLOAT;
+    EVALTYPE evalType = (type == TOK_TYPE_INT) ? INTEGER : FLOAT;
     if (id.length() != 0 && c.localSymbolTable[id]) {
         cerr << "Redefined id: " << id << endl;
         return false;

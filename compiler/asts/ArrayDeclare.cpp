@@ -20,7 +20,7 @@ ArrayDeclare::~ArrayDeclare() {
     delete size;
 }
 
-Value* ArrayDeclare::codegenExpr(Compiler& c) {
+void ArrayDeclare::codegen(Compiler& c) {
     Type* type = nullptr;
     switch (this->type){
     case TOK_TYPE_INT:
@@ -37,8 +37,6 @@ Value* ArrayDeclare::codegenExpr(Compiler& c) {
     AllocaInst* arrayAlloc = c.allocateArray(type, size->codegenExpr(c), old_name);
     c.localVariables[old_name] = arrayPointer;
     c.Builder->CreateStore(arrayAlloc, arrayPointer);
-    
-    return arrayPointer;
 }
 
 bool ArrayDeclare::eval(Analyser& a) {
