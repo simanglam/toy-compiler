@@ -2,14 +2,16 @@
 #define __FunctionCallExpr_HEADER__
 
 #include "asts/Expression.h"
+#include <vector>
+#include <string>
 
 class FunctionCallExpr : public Expression{
-    vector<Expression *> args;
-    string name;
+    std::vector<Expression *> args;
+    std::string name;
 public:
-    FunctionCallExpr(string&, vector<Expression*>&);
+    FunctionCallExpr(std::string&, std::vector<Expression*>&);
     ~FunctionCallExpr();
-    Value* codegen(Compiler&) override;
+    llvm::Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

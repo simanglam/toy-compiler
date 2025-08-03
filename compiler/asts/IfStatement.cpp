@@ -1,6 +1,9 @@
-#include "asts/IfExpr.h"
+#include "asts/IfStatement.h"
 
-#include "llvm/IR/BasicBlock.h"
+#include <llvm/IR/BasicBlock.h>
+
+#include "Compiler.h"
+#include "Analyser.h"
 
 using namespace llvm;
 
@@ -15,12 +18,12 @@ IfExpr::~IfExpr(){
     delete thenBody;
 }
 
-Value* IfExpr::codegen(Compiler& c) {
+void IfExpr::codegen(Compiler& c) {
     BasicBlock* thenBlock = BasicBlock::Create(*c.TheContext, "then", c.currentFunction);
     BasicBlock* elseBlock = BasicBlock::Create(*c.TheContext, "else");
     BasicBlock* mergeBlock = BasicBlock::Create(*c.TheContext, "ifcont");
-    Value* v = cond->codegen(c);
-    if (!v) return nullptr;
+    Value* v = cond->codegenExpr(c);
+    if (!v) return ;
     if (cond->evalType != INTEGER) {
         v = c.Builder->CreateFCmpONE(v, ConstantFP::get(v->getType(), 0.0), "ifcond");
     }
@@ -40,7 +43,7 @@ Value* IfExpr::codegen(Compiler& c) {
     c.Builder->CreateBr(mergeBlock);
     c.currentFunction->insert(c.currentFunction->end(), mergeBlock);
     c.Builder->SetInsertPoint(mergeBlock);
-    return nullptr;
+    return ;
 }
 
 bool IfExpr::eval(Analyser& a) {

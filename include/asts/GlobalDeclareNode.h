@@ -3,17 +3,20 @@
 class GlobalDeclareNode;
 
 #include "asts/Expression.h"
+#include "asts/Statement.h"
+#include "Token.h"
+#include <string>
 
-class GlobalDeclareNode : public Expression {
+class GlobalDeclareNode : public Statement {
     TOKENS type;
-    string id;
+    std::string id;
     Expression* initVal;
     int iVal;
     double dVal;
 public:
-    GlobalDeclareNode(string = "", TOKENS = TOK_ERROR, int = 0, double = 0.0);
+    GlobalDeclareNode(std::string = "", TOKENS = TOK_ERROR, int = 0, double = 0.0);
     ~GlobalDeclareNode();
-    Value* codegen(Compiler&) override;
+    void codegen(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

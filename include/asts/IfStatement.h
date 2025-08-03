@@ -4,6 +4,7 @@ class IfExpr;
 
 #include "asts/Expression.h"
 #include "asts/Statement.h"
+#include "asts/BlockNode.h"
 
 class IfExpr : public Statement {
     Expression* cond;
