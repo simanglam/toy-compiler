@@ -3,6 +3,8 @@
 class DeclareNode;
 
 #include "asts/Expression.h"
+#include "Token.h"
+#include <string>
 
 class DeclareNode : public Expression {
     TOKENS type;
@@ -11,9 +13,9 @@ class DeclareNode : public Expression {
 public:
     DeclareNode(string = "", TOKENS = TOK_ERROR, Expression* = nullptr);
     ~DeclareNode();
-    llvm::Value* codegen(Compiler&) override;
     TOKENS getType();
     string& getName();
+    llvm::Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

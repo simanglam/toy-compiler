@@ -1,4 +1,8 @@
 #include "asts/DeclareNode.h"
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Constant.h>
+#include "Compiler.h"
+#include "Analyser.h"
 
 using namespace llvm;
 
@@ -16,7 +20,7 @@ string& DeclareNode::getName() {
     return id;
 }
 
-Value* DeclareNode::codegen(Compiler& c) {
+Value* DeclareNode::codegenExpr(Compiler& c) {
     llvm::Type* t = nullptr;
     switch (type){
         case TOK_TYPE_DOUBLE:
@@ -30,7 +34,7 @@ Value* DeclareNode::codegen(Compiler& c) {
     }
 
     c.localVariables[id] = c.allocateVar(t, id);
-    llvm::Value* initV = initVal ? initVal->codegen(c) : Constant::getNullValue(t);
+    llvm::Value* initV = initVal ? initVal->codegenExpr(c) : Constant::getNullValue(t);
     return c.Builder->CreateStore(initV, c.localVariables[id]);
 }
 
