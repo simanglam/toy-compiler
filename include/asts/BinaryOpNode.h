@@ -12,6 +12,8 @@ public:
     ~BinaryOpNode();
     Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
+    bool isLvalue() override;
+    Value* codegenAddr(Compiler&) override;
 };
 
 #endif

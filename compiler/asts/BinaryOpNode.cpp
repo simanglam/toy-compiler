@@ -24,14 +24,11 @@ BinaryOpNode::~BinaryOpNode() {
 Value* BinaryOpNode::codegenExpr(Compiler& c) {
 
     if (op == TOK_OP_ASSIGN) {
-        VariableNode* lid = static_cast<VariableNode*>(lhs);
-        if (!lid)  {
-            cerr << "Expect variable at lhs of assign operator" << endl;
+        if (!lhs->isLvalue())  {
+            cerr << "Expect lvalue at lhs of assign operator" << endl;
             return nullptr;
         }
-        Value* var = nullptr;
-        var = c.localVariables[lid->getName()];
-        if (!var) var = c.globalVar[lid->getName()];
+        Value* var = lhs->codegenAddr(c);
         assert(var != nullptr);
         
         Value* storeValue = rhs->codegenExpr(c);
@@ -186,4 +183,17 @@ bool BinaryOpNode::eval(Analyser& a) {
             break;
     }
     return result;
+}
+
+bool BinaryOpNode::isLvalue() {
+    return op == TOK_OP_LEFTBRA;
+}
+
+Value* BinaryOpNode::codegenAddr(Compiler& c) {
+    if (op != TOK_OP_LEFTBRA)
+        return nullptr;
+    Value* lhsCode = lhs->codegenExpr(c);
+    Value* rhsCode = rhs->codegenExpr(c);
+    Value* v = c.Builder->CreateGEP(lhsCode->getType(), lhsCode, rhsCode, "array");
+    return v;
 }

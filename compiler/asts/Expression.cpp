@@ -7,6 +7,11 @@ void Expression::codegen(Compiler& c) {
     this->codegenExpr(c);
 }
 
+llvm::Value* Expression::codegenAddr(Compiler& c) {
+    return nullptr;
+}
+
+
 bool Expression::isLvalue() {
     return false;
 }
