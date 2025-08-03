@@ -11,8 +11,4 @@ public:
     virtual ~Statement();
 };
 
-
-#include "Compiler.h"
-#include "Analyser.h"
-
 #endif

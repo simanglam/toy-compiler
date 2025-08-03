@@ -1,5 +1,15 @@
 #include "asts/ArrayDeclare.h"
 
+#include "Compiler.h"
+#include "Analyser.h"
+
+#include <llvm/IR/Value.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/Instructions.h>
+
+
+using namespace llvm;
+
 ArrayDeclare::ArrayDeclare(TOKENS _type, vector<Expression*>& _values, Expression* _size, string& _name): type(_type), values(_values), size(_size), name(_name) {
     
 }
@@ -10,7 +20,7 @@ ArrayDeclare::~ArrayDeclare() {
     delete size;
 }
 
-Value* ArrayDeclare::codegen(Compiler& c) {
+Value* ArrayDeclare::codegenExpr(Compiler& c) {
     Type* type = nullptr;
     switch (this->type){
     case TOK_TYPE_INT:
@@ -24,7 +34,7 @@ Value* ArrayDeclare::codegen(Compiler& c) {
     }
     string old_name = name;
     AllocaInst* arrayPointer = c.allocateVar(type->getPointerTo(), (name.append("body")));
-    AllocaInst* arrayAlloc = c.allocateArray(type, size->codegen(c), old_name);
+    AllocaInst* arrayAlloc = c.allocateArray(type, size->codegenExpr(c), old_name);
     c.localVariables[old_name] = arrayPointer;
     c.Builder->CreateStore(arrayAlloc, arrayPointer);
     

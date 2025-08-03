@@ -15,8 +15,4 @@ public:
     virtual void codegen(Compiler&) = 0;
 };
 
-
-#include "Compiler.h"
-#include "Analyser.h"
-
 #endif
