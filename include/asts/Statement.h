@@ -7,8 +7,8 @@
 
 class Statement : public ASTNode {
 public:
-    Statement();
-    virtual ~Statement();
+    Statement() {};
+    virtual ~Statement() {};
 };
 
 #endif

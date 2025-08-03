@@ -9,8 +9,8 @@ class Analyser;
 
 class ASTNode {
 public:
-    ASTNode();
-    virtual ~ASTNode();
+    ASTNode() {};
+    virtual ~ASTNode() {};
     virtual bool eval(Analyser&) = 0;
     virtual void codegen(Compiler&) = 0;
 };

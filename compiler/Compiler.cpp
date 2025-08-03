@@ -8,6 +8,7 @@
 #include "llvm/IR/LegacyPassManager.h"
 
 #include "Compiler.h"
+#include "Analyser.h"
 
 Compiler::Compiler(CommandLineOptions& _options): options(_options) {
     
@@ -18,7 +19,7 @@ Compiler::~Compiler() {
 }
 
 bool Compiler::compile() {
-    Expression* ast;
+    ASTNode* ast = nullptr;
     if (options.inputs.size() != 0) {
         for (string file : options.inputs) {
             fstream f(file);
