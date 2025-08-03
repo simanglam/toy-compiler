@@ -1,6 +1,6 @@
 #ifndef __Analyser_Header__
 #define __Analyser_Header__
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 #include <map>
 #include <vector>
 
@@ -20,7 +20,7 @@ public:
     EVALTYPE returnType;
     Analyser();
     ~Analyser();
-    bool eval(BaseExpr*);
+    bool eval(Expression*);
 };
 
 #endif

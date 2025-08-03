@@ -2,12 +2,12 @@
 #define __GlobalDeclareNode_HEADER__
 class GlobalDeclareNode;
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 
-class GlobalDeclareNode : public BaseExpr {
+class GlobalDeclareNode : public Expression {
     TOKENS type;
     string id;
-    BaseExpr* initVal;
+    Expression* initVal;
     int iVal;
     double dVal;
 public:

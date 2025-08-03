@@ -4,37 +4,37 @@
 #include "Token.h" 
 #include "Scanner.h"
 
-class BaseExpr;
+class Expression;
 class DeclareNode;
 class BlockNode;
 
 class Parser{
 private:
     Scanner& s;
-    BaseExpr* parsePrimary();
-    BaseExpr* parseUnary();
-    BaseExpr* parseIndExpression();
-    BaseExpr* parseParExpression();
-    BaseExpr* parseExpression();
-    BaseExpr* parseInteger();
-    BaseExpr* parseDouble();
-    BaseExpr* parseGlobalDeclare();
-    BaseExpr* parseBinOpRhs(int, BaseExpr*);
-    BaseExpr* parseFunction(string, TOKENS);
-    BaseExpr* parseDeclare();
+    Expression* parsePrimary();
+    Expression* parseUnary();
+    Expression* parseIndExpression();
+    Expression* parseParExpression();
+    Expression* parseExpression();
+    Expression* parseInteger();
+    Expression* parseDouble();
+    Expression* parseGlobalDeclare();
+    Expression* parseBinOpRhs(int, Expression*);
+    Expression* parseFunction(string, TOKENS);
+    Expression* parseDeclare();
     BlockNode* parseBlock();
-    BaseExpr* parseReturn();
+    Expression* parseReturn();
     DeclareNode* parseFunctionDeclare();
-    BaseExpr* parseIf();
+    Expression* parseIf();
 
 public:
     Parser();
     Parser(Scanner&);
     ~Parser();
-    BaseExpr* parseLine();
+    Expression* parseLine();
 };
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 #include "asts/BlockNode.h"
 #include "asts/DeclareNode.h"
 #include "asts/FunctionAST.h"

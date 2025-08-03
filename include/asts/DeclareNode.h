@@ -2,14 +2,14 @@
 #define __DeclareNode_HEADER__
 class DeclareNode;
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 
-class DeclareNode : public BaseExpr {
+class DeclareNode : public Expression {
     TOKENS type;
     string id;
-    BaseExpr* initVal;
+    Expression* initVal;
 public:
-    DeclareNode(string = "", TOKENS = TOK_ERROR, BaseExpr* = nullptr);
+    DeclareNode(string = "", TOKENS = TOK_ERROR, Expression* = nullptr);
     ~DeclareNode();
     llvm::Value* codegen(Compiler&) override;
     TOKENS getType();

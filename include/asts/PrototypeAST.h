@@ -2,7 +2,7 @@
 #define __PrototypeAST_HEADER__
 class PrototypeAST;
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 #include "asts/DeclareNode.h"
 
 #include <vector>
@@ -11,7 +11,7 @@ class PrototypeAST;
 using namespace llvm;
 
 
-class PrototypeAST: public BaseExpr {
+class PrototypeAST: public Expression {
     TOKENS returnType;
     vector<DeclareNode*> args;
     string name;

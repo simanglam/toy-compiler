@@ -1,6 +1,6 @@
 #include "asts/ReturnStatement.h"
 
-ReturnStatement::ReturnStatement(BaseExpr* _exp): expr(_exp) {}
+ReturnStatement::ReturnStatement(Expression* _exp): expr(_exp) {}
 
 ReturnStatement::~ReturnStatement() {
     delete expr;

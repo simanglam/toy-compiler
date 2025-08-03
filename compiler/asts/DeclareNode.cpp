@@ -2,7 +2,7 @@
 
 using namespace llvm;
 
-DeclareNode::DeclareNode(string _id, TOKENS _type, BaseExpr* _initVal): id(_id), type(_type), initVal(_initVal) {}
+DeclareNode::DeclareNode(string _id, TOKENS _type, Expression* _initVal): id(_id), type(_type), initVal(_initVal) {}
 
 DeclareNode::~DeclareNode() {
     delete initVal;

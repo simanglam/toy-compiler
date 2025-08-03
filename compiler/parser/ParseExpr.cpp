@@ -36,21 +36,21 @@ static int getTokenPrec(const Token& t) {
 
 }
 
-BaseExpr* Parser::parseExpression() {
-    BaseExpr* lhs = parsePrimary();
-    BaseExpr* node = parseBinOpRhs(0, lhs);
+Expression* Parser::parseExpression() {
+    Expression* lhs = parsePrimary();
+    Expression* node = parseBinOpRhs(0, lhs);
     return node;
 }
 
-BaseExpr* Parser::parseIndExpression() {
+Expression* Parser::parseIndExpression() {
     string name = s.currentToken.strLiteral;
     if (s.nextToken.type != TOK_OP_LEFTPAR){
-        BaseExpr* node = new VariableNode(name);
+        Expression* node = new VariableNode(name);
         s.getToken();
-        BaseExpr* expr = parseBinOpRhs(0, node);
+        Expression* expr = parseBinOpRhs(0, node);
         return expr;
     }
-    vector<BaseExpr*> args;
+    vector<Expression*> args;
     s.getToken();
     while (s.currentToken.type != TOK_OP_RIGHTPAR) {
         s.getToken();
@@ -62,10 +62,10 @@ BaseExpr* Parser::parseIndExpression() {
     return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing id expr");
 }
 
-BaseExpr* Parser::parseParExpression() {
+Expression* Parser::parseParExpression() {
     s.getToken();
-    BaseExpr* lhs = parsePrimary();
-    BaseExpr* node = parseBinOpRhs(0, lhs);
+    Expression* lhs = parsePrimary();
+    Expression* node = parseBinOpRhs(0, lhs);
     if (s.currentToken.type != TOK_OP_RIGHTPAR) {
         delete node;
         delete lhs;
@@ -75,7 +75,7 @@ BaseExpr* Parser::parseParExpression() {
     return node;
 };
 
-BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
+Expression* Parser::parseBinOpRhs(int minPrec, Expression* lhs){
     while (true){
         int tokPrec = getTokenPrec(s.currentToken);
         if (tokPrec < minPrec)
@@ -84,7 +84,7 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
         TOKENS op = s.currentToken.type;
         s.getToken();
         
-        BaseExpr* rhs = parsePrimary();
+        Expression* rhs = parsePrimary();
 
         if (!rhs){
             return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing bin rhs");
@@ -103,20 +103,20 @@ BaseExpr* Parser::parseBinOpRhs(int minPrec, BaseExpr* lhs){
     }
 }
 
-BaseExpr* Parser::parseUnary() {
+Expression* Parser::parseUnary() {
     TOKENS op = s.currentToken.type;
     s.getToken();
     return new UnaryExpr(parsePrimary(), op);
 }
 
-BaseExpr* Parser::parseInteger() {
-    BaseExpr* node = new IntegerExpr(s.currentToken.intVal);
+Expression* Parser::parseInteger() {
+    Expression* node = new IntegerExpr(s.currentToken.intVal);
     s.getToken();
     return node;
 }
 
-BaseExpr* Parser::parseDouble() {
-    BaseExpr* node = new DoubleExpr(s.currentToken.floatVal);
+Expression* Parser::parseDouble() {
+    Expression* node = new DoubleExpr(s.currentToken.floatVal);
     s.getToken();
     return node;
 }

@@ -1,14 +1,14 @@
 #ifndef __BinaryOpNode_HEADER__
 #define __BinaryOpNode_HEADER__
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 
-class BinaryOpNode : public BaseExpr {
-    BaseExpr* lhs;
+class BinaryOpNode : public Expression {
+    Expression* lhs;
     TOKENS op;
-    BaseExpr* rhs;
+    Expression* rhs;
 public:
-    BinaryOpNode(BaseExpr*, TOKENS, BaseExpr*);
+    BinaryOpNode(Expression*, TOKENS, Expression*);
     ~BinaryOpNode();
     Value* codegen(Compiler&) override;
     bool eval(Analyser&) override;

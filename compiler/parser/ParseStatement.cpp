@@ -8,17 +8,17 @@
 #include "asts/IfExpr.h"
 #include "asts/ErrorExpr.h"
 
-BaseExpr* Parser::parseReturn() {
+Expression* Parser::parseReturn() {
     s.getToken();
-    BaseExpr* node = new ReturnStatement(parseExpression());
+    Expression* node = new ReturnStatement(parseExpression());
     return node;
 }
 
-BaseExpr* Parser::parseIf() {
+Expression* Parser::parseIf() {
     if (s.getToken().type != TOK_OP_LEFTPAR) {
         return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if");
     }
-    BaseExpr* cond = parseParExpression();
+    Expression* cond = parseParExpression();
 
     if (!cond) {
         return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing cond");
@@ -26,7 +26,7 @@ BaseExpr* Parser::parseIf() {
 
     BlockNode* ifBody = nullptr;    
     if (s.currentToken.type != TOK_CUR_LEFT) {        
-        vector<BaseExpr*> expr;
+        vector<Expression*> expr;
         expr.push_back(parsePrimary());
 
         if (!expr.back()) {
@@ -45,20 +45,20 @@ BaseExpr* Parser::parseIf() {
     s.getToken();
 
     if (s.getToken().type != TOK_CUR_LEFT) {
-        vector<BaseExpr*> expr;
+        vector<Expression*> expr;
         expr.reserve(1);
         expr.push_back(parsePrimary());
         return new IfExpr(cond, ifBody, new BlockNode(expr));
     }
     else {
-        BaseExpr* node = new IfExpr(cond, ifBody, parseBlock());
+        Expression* node = new IfExpr(cond, ifBody, parseBlock());
         return node;
     }
     return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
 
 }
 
-BaseExpr* Parser::parseDeclare() {
+Expression* Parser::parseDeclare() {
     TOKENS type = s.currentToken.type;
     s.getToken();
     if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
@@ -67,7 +67,7 @@ BaseExpr* Parser::parseDeclare() {
 
     string name = s.currentToken.strLiteral;
     s.getToken();
-    BaseExpr* node = nullptr;
+    Expression* node = nullptr;
 
     if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
@@ -75,13 +75,13 @@ BaseExpr* Parser::parseDeclare() {
     }
     else if (s.currentToken.type == TOK_OP_LEFTBRA) {
         s.getToken();
-        BaseExpr* arraySizeExpr = nullptr;
+        Expression* arraySizeExpr = nullptr;
         if (s.currentToken.type != TOK_OP_RIGHTPAR)
             arraySizeExpr = parsePrimary();
 
         // cerr << "An array with size: " << arraySize << endl;
 
-        vector<BaseExpr*> initVals;
+        vector<Expression*> initVals;
         if (s.getToken().type == TOK_OP_ASSIGN) {
             assert(s.getToken().type == TOK_CUR_LEFT);
             while (s.getToken().type != TOK_CUR_RIGHT){

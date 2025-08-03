@@ -1,10 +1,10 @@
 #ifndef __ErrorExpr_HEADER__
 #define __ErrorExpr_HEADER__
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 
 class Compiler;
 
-class ErrorExpr : public BaseExpr{
+class ErrorExpr : public Expression{
     string message;
 public:
     ErrorExpr(string);

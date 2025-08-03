@@ -1,11 +1,11 @@
 #include "asts/ArrayDeclare.h"
 
-ArrayDeclare::ArrayDeclare(TOKENS _type, vector<BaseExpr*>& _values, BaseExpr* _size, string& _name): type(_type), values(_values), size(_size), name(_name) {
+ArrayDeclare::ArrayDeclare(TOKENS _type, vector<Expression*>& _values, Expression* _size, string& _name): type(_type), values(_values), size(_size), name(_name) {
     
 }
 
 ArrayDeclare::~ArrayDeclare() {
-    for (BaseExpr* e : values)
+    for (Expression* e : values)
         delete e;
     delete size;
 }

@@ -1,5 +1,5 @@
-#ifndef __BaseExpr_HEADER__
-#define __BaseExpr_HEADER__
+#ifndef __Expression_HEADER__
+#define __Expression_HEADER__
 #include <string>
 #include <llvm/IR/Value.h>
 #include "EvalType.h"
@@ -9,11 +9,11 @@ using namespace std;
 class Compiler;
 class Analyser;
 
-class BaseExpr{
+class Expression{
 public:
     EVALTYPE evalType = UNDIFINED;
-    BaseExpr();
-    virtual ~BaseExpr();
+    Expression();
+    virtual ~Expression();
     virtual Value* codegen(Compiler&) = 0;
     virtual bool eval(Analyser&) = 0;
 };

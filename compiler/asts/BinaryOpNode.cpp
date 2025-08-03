@@ -14,7 +14,7 @@ Value* castToSameType(Compiler& c, EVALTYPE target, Value* storeValue) {
     return storeValue;
 }
 
-BinaryOpNode::BinaryOpNode(BaseExpr* _lhs, TOKENS _op, BaseExpr* _rhs): lhs(_lhs), op(_op), rhs(_rhs) {}
+BinaryOpNode::BinaryOpNode(Expression* _lhs, TOKENS _op, Expression* _rhs): lhs(_lhs), op(_op), rhs(_rhs) {}
 
 BinaryOpNode::~BinaryOpNode() {
     delete lhs; delete rhs;
@@ -29,8 +29,11 @@ Value* BinaryOpNode::codegen(Compiler& c) {
             cerr << "Expect variable at lhs of assign operator" << endl;
             return nullptr;
         }
-        Value* var = c.localVariables[lid->getName()]; 
+        Value* var = nullptr;
+        var = c.localVariables[lid->getName()];
         if (!var) var = c.globalVar[lid->getName()];
+        var = lid->codegen(c);
+        assert(var != nullptr);
         
         Value* storeValue = rhs->codegen(c);
         if (lhs->evalType != rhs->evalType){
@@ -107,6 +110,11 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         }
     }
 
+    if (op == TOK_OP_LEFTBRA) {
+        Value* v = c.Builder->CreateGEP(lhsCode->getType(), lhsCode, rhsCode, "array");
+        return c.Builder->CreateLoad(c.Builder->getInt32Ty(), v, "arrayElement");
+    }
+
     if (lhs->evalType == FLOAT)
         lhsCode = c.Builder->CreateFCmpONE(lhsCode, ConstantFP::get(lhsCode->getType(), 0.0), "fcmp");
     else
@@ -123,10 +131,13 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         case TOK_OP_OR:
             returnVal = c.Builder->CreateLogicalOr(lhsCode, rhsCode, "logicalAnd");
             break;
-
+        case TOK_OP_LEFTBRA:
+            return c.Builder->CreateGEP(lhsCode->getType(), lhsCode, {c.Builder->getInt32(0), rhsCode}, "array");
+            //return c.Builder->CreateExtractElement(c.Builder->CreateGEP(lhsCode->getType(), lhsCode, {c.Builder->getInt32(0), rhs}, "array"), rhsCode, "Element");
         default:
             break;
     }
+
 
     return c.Builder->CreateIntCast(returnVal, Type::getInt32Ty(*c.TheContext), true, "intCast");
     

@@ -4,12 +4,12 @@ class BlockNode;
 
 #include <vector>
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 
-class BlockNode : public BaseExpr {
-    vector<BaseExpr*> expressions;
+class BlockNode : public Expression {
+    vector<Expression*> expressions;
 public:
-    BlockNode(vector<BaseExpr*>);
+    BlockNode(vector<Expression*>);
     ~BlockNode();
     llvm::Value* codegen(Compiler&) override;
     bool eval(Analyser&) override;

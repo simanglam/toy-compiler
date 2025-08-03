@@ -5,7 +5,7 @@
 using namespace llvm;
 
 
-IfExpr::IfExpr(BaseExpr* _cond, BlockNode* _ifBody, BlockNode* _thenBody): cond(_cond), ifBody(_ifBody), thenBody(_thenBody) {
+IfExpr::IfExpr(Expression* _cond, BlockNode* _ifBody, BlockNode* _thenBody): cond(_cond), ifBody(_ifBody), thenBody(_thenBody) {
     
 }
 

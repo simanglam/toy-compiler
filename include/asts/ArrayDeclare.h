@@ -1,15 +1,15 @@
 #ifndef __ArrayDeclare_HEADER__
 #define __ArrayDeclare_HEADER__
 
-#include "BaseExpr.h"
+#include "Expression.h"
 
-class ArrayDeclare: public BaseExpr {
+class ArrayDeclare: public Expression {
     TOKENS type;
-    vector<BaseExpr*> values;
-    BaseExpr* size;
+    vector<Expression*> values;
+    Expression* size;
     string name;
 public:
-    ArrayDeclare(TOKENS, vector<BaseExpr*>&, BaseExpr*, string&);
+    ArrayDeclare(TOKENS, vector<Expression*>&, Expression*, string&);
     ~ArrayDeclare();
     Value* codegen(Compiler&) override;
     bool eval(Analyser&) override;

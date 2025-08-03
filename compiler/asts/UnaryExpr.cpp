@@ -1,6 +1,6 @@
 #include "asts/UnaryExpr.h"
 
-UnaryExpr::UnaryExpr(BaseExpr* _target, TOKENS _op): target(_target), op(_op) {}
+UnaryExpr::UnaryExpr(Expression* _target, TOKENS _op): target(_target), op(_op) {}
 
 UnaryExpr::~UnaryExpr() {
     delete target;

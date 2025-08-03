@@ -1,12 +1,12 @@
 #ifndef __ConstExpr_HEADER__
 #define __ConstExpr_HEADER__
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 #include <llvm/IR/Value.h>
 
 using namespace llvm;
 
-class IntegerExpr : public BaseExpr {
+class IntegerExpr : public Expression {
     int val;
 public:
     IntegerExpr(int);
@@ -14,7 +14,7 @@ public:
     bool eval(Analyser&) override;
 };
 
-class DoubleExpr : public BaseExpr {
+class DoubleExpr : public Expression {
     double val;
 public:
     DoubleExpr(double);

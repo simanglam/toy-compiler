@@ -2,14 +2,14 @@
 #define __IfExpr_HEADER__
 class IfExpr;
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 
-class IfExpr : public BaseExpr {
-    BaseExpr* cond;
+class IfExpr : public Expression {
+    Expression* cond;
     BlockNode* ifBody;
     BlockNode* thenBody;
 public:
-    IfExpr(BaseExpr*, BlockNode*, BlockNode*);
+    IfExpr(Expression*, BlockNode*, BlockNode*);
     ~IfExpr();
     Value* codegen(Compiler&) override;
     bool eval(Analyser&) override;

@@ -2,7 +2,7 @@
 #define __FunctionAST_HEADER__
 class FunctionAST;
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 #include "asts/BlockNode.h"
 #include "asts/PrototypeAST.h"
 #include "Compiler.h"
@@ -12,7 +12,7 @@ class FunctionAST;
 using namespace llvm;
 
 
-class FunctionAST: public BaseExpr {
+class FunctionAST: public Expression {
     PrototypeAST* proto;
     BlockNode* body;
 public:

@@ -7,7 +7,7 @@
 #include "asts/ErrorExpr.h"
 
 
-BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
+Expression* Parser::parseFunction(string name, TOKENS returnType) {
     vector<DeclareNode*> args;
     while (s.currentToken.type != TOK_OP_RIGHTPAR){
         s.getToken();

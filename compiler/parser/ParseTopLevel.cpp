@@ -14,7 +14,7 @@ Parser::Parser(Scanner& _s): s(_s) {}
 
 Parser::~Parser() {}
 
-BaseExpr* Parser::parseLine() {
+Expression* Parser::parseLine() {
     switch (s.getToken().type){
     case TOK_EOF:
         return nullptr;
@@ -32,7 +32,7 @@ BaseExpr* Parser::parseLine() {
     return new ErrorExpr("Unexpect Token: " + s.currentToken.strLiteral + " when parsing line");
 }
 
-BaseExpr* Parser::parseGlobalDeclare() {
+Expression* Parser::parseGlobalDeclare() {
     TOKENS type = s.currentToken.type;
     if (s.getToken().type != TOK_IND) {
         s.getToken();
@@ -41,7 +41,7 @@ BaseExpr* Parser::parseGlobalDeclare() {
 
     string name = s.currentToken.strLiteral;
     s.getToken();
-    BaseExpr* node = nullptr;
+    Expression* node = nullptr;
 
     if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
@@ -69,14 +69,14 @@ BaseExpr* Parser::parseGlobalDeclare() {
 
 
 BlockNode* Parser::parseBlock() {
-    vector<BaseExpr *> exps;
+    vector<Expression *> exps;
     while (s.getToken().type != TOK_CUR_RIGHT && s.currentToken.type != TOK_EOF) {
         exps.push_back(parsePrimary());
     }
     return new BlockNode(exps);
 }
 
-BaseExpr* Parser::parsePrimary() {
+Expression* Parser::parsePrimary() {
     switch (s.currentToken.type){
         case TOK_OP_NOT:
         case TOK_OP_MINUS:

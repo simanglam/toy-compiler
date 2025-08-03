@@ -18,7 +18,7 @@ Compiler::~Compiler() {
 }
 
 bool Compiler::compile() {
-    BaseExpr* ast;
+    Expression* ast;
     if (options.inputs.size() != 0) {
         for (string file : options.inputs) {
             fstream f(file);
