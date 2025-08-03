@@ -12,6 +12,10 @@ public:
     virtual ~Expression();
     void codegen(Compiler&) override;
     virtual llvm::Value* codegenExpr(Compiler&) = 0;
+    virtual llvm::Value* codegenAddr(Compiler&);
+    virtual bool isLvalue();
+    virtual bool isConstantExpr();
+    virtual double getValue();
 };
 
 #endif
