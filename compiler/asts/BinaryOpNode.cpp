@@ -32,7 +32,6 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
         Value* var = nullptr;
         var = c.localVariables[lid->getName()];
         if (!var) var = c.globalVar[lid->getName()];
-        var = lid->codegen(c);
         assert(var != nullptr);
         
         Value* storeValue = rhs->codegenExpr(c);
@@ -69,16 +68,22 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
                 return c.Builder->CreateSDiv(lhsCode, rhsCode, "divtmp");
             case TOK_OP_UNEQUAL:
                 returnVal = c.Builder->CreateICmpNE(lhsCode, rhsCode, "uneqltemp");
+                break;
             case TOK_OP_EQUAL:
                 returnVal = c.Builder->CreateICmpEQ(lhsCode, rhsCode, "eqltemp");
+                break;
             case TOK_OP_LE:
                 returnVal = c.Builder->CreateICmpSLE(lhsCode, rhsCode, "leqtemp");
+                break;
             case TOK_OP_LT:
                 returnVal = c.Builder->CreateICmpSLT(lhsCode, rhsCode, "ltemp");
+                break;
             case TOK_OP_GE:
                 returnVal = c.Builder->CreateICmpSGE(lhsCode, rhsCode, "geqtemp");
+                break;
             case TOK_OP_GT:
                 returnVal = c.Builder->CreateICmpSGT(lhsCode, rhsCode, "gttemp");
+                break;
             default:
                 break;
         }
@@ -95,16 +100,22 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
                 return c.Builder->CreateFDiv(lhsCode, rhsCode, "divtmp");
             case TOK_OP_UNEQUAL:
                 returnVal = c.Builder->CreateFCmpONE(lhsCode, rhsCode, "uneqltemp");
+                break;
             case TOK_OP_EQUAL:
                 returnVal = c.Builder->CreateFCmpOEQ(lhsCode, rhsCode, "eqltemp");
+                break;
             case TOK_OP_LE:
                 returnVal = c.Builder->CreateFCmpOLE(lhsCode, rhsCode, "leqtemp");
+                break;
             case TOK_OP_LT:
                 returnVal = c.Builder->CreateFCmpOLT(lhsCode, rhsCode, "ltemp");
+                break;
             case TOK_OP_GE:
                 returnVal = c.Builder->CreateFCmpOGE(lhsCode, rhsCode, "geqtemp");
+                break;
             case TOK_OP_GT:
                 returnVal = c.Builder->CreateFCmpOGT(lhsCode, rhsCode, "gttemp");
+                break;
             default:
                 break;
         }
