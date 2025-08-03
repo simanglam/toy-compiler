@@ -15,6 +15,10 @@ public:
     string& getName();
     Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
+    virtual llvm::Value* codegenAddr(Compiler&) override;
+    bool isLvalue() override;
+    bool isConstantExpr() override;
+    double getValue() override;
 };
 
 #endif

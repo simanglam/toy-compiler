@@ -27,6 +27,17 @@ Value* VariableNode::codegenExpr(Compiler& c) {
     return nullptr;
 };
 
+Value* VariableNode::codegenAddr(Compiler& c) {
+    Value* var = c.localVariables[name];
+    if (var) return var;
+    
+    var = c.globalVar[name];
+    if (var) return var;
+
+    cerr << "Unknown Variable: " << name << endl;
+    return nullptr;
+};
+
 bool VariableNode::eval(Analyser& a) {
     if ((!a.localSymbolTable.count(name) && !a.globalSymbolTable.count(name))){
         cerr << "Unknown variable: " << name << endl;
@@ -34,4 +45,16 @@ bool VariableNode::eval(Analyser& a) {
     }
     evalType = a.localSymbolTable.count(name) ? a.localSymbolTable[name] : a.globalSymbolTable[name];
     return true;
+}
+
+bool VariableNode::isLvalue() {
+    return true;
+}
+
+bool VariableNode::isConstantExpr() {
+    return false;
+}
+
+double VariableNode::getValue() {
+    return 0;
 }
