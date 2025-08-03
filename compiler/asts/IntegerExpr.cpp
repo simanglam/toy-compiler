@@ -10,7 +10,7 @@ using namespace llvm;
 IntegerExpr::IntegerExpr(int _val): val(_val) {}
 
 
-Value* IntegerExpr::codegen(Compiler& c) {
+Value* IntegerExpr::codegenExpr(Compiler& c) {
     return ConstantInt::get(Type::getInt32Ty(*c.TheContext), val, true);
 }
 

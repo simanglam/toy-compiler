@@ -2,6 +2,7 @@
 #define __UnaryExpr_HEADER__
 
 #include "asts/Expression.h"
+#include "Token.h"
 
 class UnaryExpr : public Expression {
     Expression* target;
@@ -9,7 +10,7 @@ class UnaryExpr : public Expression {
 public:
     UnaryExpr(Expression*, TOKENS);
     ~UnaryExpr();
-    Value* codegen(Compiler&) override;
+    llvm::Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

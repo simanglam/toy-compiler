@@ -1,4 +1,5 @@
 #include "asts/ReturnStatement.h"
+#include "Analyser.h"
 
 ReturnStatement::ReturnStatement(Expression* _exp): expr(_exp) {}
 
@@ -6,8 +7,8 @@ ReturnStatement::~ReturnStatement() {
     delete expr;
 }
 
-Value* ReturnStatement::codegen(Compiler& c) {
-    return expr ? c.Builder->CreateRet(expr->codegen(c)) : c.Builder->CreateRetVoid();
+void ReturnStatement::codegen(Compiler& c) {
+    expr ? c.Builder->CreateRet(expr->codegenExpr(c)) : c.Builder->CreateRetVoid();
 }
 
 bool ReturnStatement::eval(Analyser& a) {
