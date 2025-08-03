@@ -10,7 +10,7 @@ class BinaryOpNode : public Expression {
 public:
     BinaryOpNode(Expression*, TOKENS, Expression*);
     ~BinaryOpNode();
-    Value* codegen(Compiler&) override;
+    Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

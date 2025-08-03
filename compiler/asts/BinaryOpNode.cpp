@@ -21,7 +21,7 @@ BinaryOpNode::~BinaryOpNode() {
 }
 
 
-Value* BinaryOpNode::codegen(Compiler& c) {
+Value* BinaryOpNode::codegenExpr(Compiler& c) {
 
     if (op == TOK_OP_ASSIGN) {
         VariableNode* lid = static_cast<VariableNode*>(lhs);
@@ -35,7 +35,7 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         var = lid->codegen(c);
         assert(var != nullptr);
         
-        Value* storeValue = rhs->codegen(c);
+        Value* storeValue = rhs->codegenExpr(c);
         if (lhs->evalType != rhs->evalType){
             storeValue = castToSameType(c, lhs->evalType, storeValue);
         }
@@ -43,8 +43,8 @@ Value* BinaryOpNode::codegen(Compiler& c) {
     }
     
 
-    llvm::Value* lhsCode = lhs->codegen(c);
-    llvm::Value* rhsCode = rhs->codegen(c);
+    llvm::Value* lhsCode = lhs->codegenExpr(c);
+    llvm::Value* rhsCode = rhs->codegenExpr(c);
     if (!lhsCode || !rhsCode)
         return nullptr;
     if (lhs->evalType != evalType) {
