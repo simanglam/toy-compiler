@@ -12,8 +12,8 @@ class VariableNode : public Expression {
     string name;
 public:
     VariableNode(string);
-    Value* codegen(Compiler&) override;
     string& getName();
+    Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

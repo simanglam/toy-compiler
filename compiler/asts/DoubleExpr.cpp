@@ -10,7 +10,7 @@ using namespace llvm;
 DoubleExpr::DoubleExpr(double _val): val(_val) {}
 
 
-Value* DoubleExpr::codegen(Compiler& c) {
+Value* DoubleExpr::codegenExpr(Compiler& c) {
     return ConstantFP::get(Type::getDoubleTy(*c.TheContext), val);
 }
 

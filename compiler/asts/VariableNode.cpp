@@ -1,6 +1,8 @@
 #include <iostream>
 
 #include "asts/VariableNode.h"
+#include "Compiler.h"
+#include "Analyser.h"
 
 VariableNode::VariableNode(string _name): name(_name) {};
 
@@ -8,7 +10,7 @@ string& VariableNode::getName() {
     return name;
 }
 
-Value* VariableNode::codegen(Compiler& c) {
+Value* VariableNode::codegenExpr(Compiler& c) {
     Value* var = c.localVariables[name];
     if (var) {
         return c.Builder->CreateLoad(c.localVariables[name]->getAllocatedType(), var, name.c_str());
