@@ -16,9 +16,6 @@ Statement* Parser::parseReturn() {
 
 Statement* Parser::parseIf() {
     assert(s.getToken().type == TOK_OP_LEFTPAR);
-    if (s.getToken().type != TOK_OP_LEFTPAR) {
-        return (Statement*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if");
-    }
     Expression* cond = parseParExpression();
 
     if (!cond) {
@@ -27,8 +24,8 @@ Statement* Parser::parseIf() {
 
     BlockNode* ifBody = nullptr;    
     if (s.currentToken.type != TOK_CUR_LEFT) {        
-        vector<Expression*> expr;
-        expr.push_back(parsePrimary());
+        vector<ASTNode*> expr;
+        expr.push_back(parseLinePrimary());
 
         if (!expr.back()) {
             delete cond;
@@ -46,9 +43,9 @@ Statement* Parser::parseIf() {
     s.getToken();
 
     if (s.getToken().type != TOK_CUR_LEFT) {
-        vector<Expression*> expr;
+        vector<ASTNode*> expr;
         expr.reserve(1);
-        expr.push_back(parsePrimary());
+        expr.push_back(parseLinePrimary());
         return new IfExpr(cond, ifBody, new BlockNode(expr));
     }
     else {

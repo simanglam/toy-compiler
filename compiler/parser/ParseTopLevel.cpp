@@ -69,9 +69,9 @@ Statement* Parser::parseGlobalDeclare() {
 
 
 BlockNode* Parser::parseBlock() {
-    vector<Expression *> exps;
+    vector<ASTNode*> exps;
     while (s.getToken().type != TOK_CUR_RIGHT && s.currentToken.type != TOK_EOF) {
-        exps.push_back(parsePrimary());
+        exps.push_back(parseLinePrimary());
     }
     return new BlockNode(exps);
 }
