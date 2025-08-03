@@ -3,15 +3,15 @@
 class BlockNode;
 
 #include <vector>
-
+#include "asts/Statement.h"
 #include "asts/Expression.h"
 
-class BlockNode : public Expression {
-    vector<Expression*> expressions;
+class BlockNode : public Statement {
+    std::vector<Expression*> expressions;
 public:
-    BlockNode(vector<Expression*>);
+    BlockNode(std::vector<Expression*>);
     ~BlockNode();
-    llvm::Value* codegen(Compiler&) override;
+    void codegen(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

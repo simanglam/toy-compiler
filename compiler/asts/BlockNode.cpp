@@ -1,5 +1,7 @@
 #include "asts/BlockNode.h"
 
+using namespace std;
+
 BlockNode::BlockNode(vector<Expression*> _expressions): expressions(_expressions){
     
 }
@@ -10,7 +12,7 @@ BlockNode::~BlockNode(){
     }
 }
 
-Value* BlockNode::codegen(Compiler& c) {
+void BlockNode::codegen(Compiler& c) {
     for (Expression* e : expressions){
         e->codegen(c);
     }
