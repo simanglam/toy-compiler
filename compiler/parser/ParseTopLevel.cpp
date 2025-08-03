@@ -76,7 +76,7 @@ BlockNode* Parser::parseBlock() {
     return new BlockNode(exps);
 }
 
-Expression* Parser::parsePrimary() {
+ASTNode* Parser::parsePrimary() {
     switch (s.currentToken.type){
         case TOK_OP_NOT:
         case TOK_OP_MINUS:

@@ -3,15 +3,16 @@
 class IfExpr;
 
 #include "asts/Expression.h"
+#include "asts/Statement.h"
 
-class IfExpr : public Expression {
+class IfExpr : public Statement {
     Expression* cond;
     BlockNode* ifBody;
     BlockNode* thenBody;
 public:
     IfExpr(Expression*, BlockNode*, BlockNode*);
     ~IfExpr();
-    Value* codegen(Compiler&) override;
+    void codegen(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

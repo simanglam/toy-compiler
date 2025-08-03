@@ -5,7 +5,7 @@
 #include "asts/PrototypeAST.h"
 #include "asts/FunctionAST.h"
 #include "asts/ReturnStatement.h"
-#include "asts/IfExpr.h"
+#include "asts/IfStatement.h"
 #include "asts/ErrorExpr.h"
 
 Expression* Parser::parseReturn() {
@@ -14,14 +14,15 @@ Expression* Parser::parseReturn() {
     return node;
 }
 
-Expression* Parser::parseIf() {
+Statement* Parser::parseIf() {
+    assert(s.getToken().type == TOK_OP_LEFTPAR);
     if (s.getToken().type != TOK_OP_LEFTPAR) {
-        return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if");
+        return (Statement*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if");
     }
     Expression* cond = parseParExpression();
 
     if (!cond) {
-        return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing cond");
+        return (Statement*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing cond");
     }
 
     BlockNode* ifBody = nullptr;    
@@ -31,7 +32,7 @@ Expression* Parser::parseIf() {
 
         if (!expr.back()) {
             delete cond;
-            return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if Body");
+            return (Statement*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing if Body");
         }
         ifBody = new BlockNode(expr);
     }
@@ -51,10 +52,10 @@ Expression* Parser::parseIf() {
         return new IfExpr(cond, ifBody, new BlockNode(expr));
     }
     else {
-        Expression* node = new IfExpr(cond, ifBody, parseBlock());
+        Statement* node = new IfExpr(cond, ifBody, parseBlock());
         return node;
     }
-    return new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
+    return (Statement*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
 
 }
 

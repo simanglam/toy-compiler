@@ -7,6 +7,8 @@
 class Expression;
 class DeclareNode;
 class BlockNode;
+class Statement;
+class ASTNode;
 
 class Parser{
 private:
@@ -25,16 +27,18 @@ private:
     BlockNode* parseBlock();
     Expression* parseReturn();
     DeclareNode* parseFunctionDeclare();
-    Expression* parseIf();
+    Statement* parseIf();
 
 public:
     Parser();
     Parser(Scanner&);
     ~Parser();
-    Expression* parseLine();
+    ASTNode* parseLine();
 };
 
+#include "asts/ASTNode.h"
 #include "asts/Expression.h"
+#include "asts/Statement.h"
 #include "asts/BlockNode.h"
 #include "asts/DeclareNode.h"
 #include "asts/FunctionAST.h"

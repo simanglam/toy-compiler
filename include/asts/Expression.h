@@ -3,18 +3,18 @@
 #include <string>
 #include <llvm/IR/Value.h>
 #include "EvalType.h"
-using namespace llvm;
-using namespace std;
+#include "asts/ASTNode.h"
 
 class Compiler;
 class Analyser;
 
-class Expression{
+class Expression: public ASTNode {
 public:
     EVALTYPE evalType = UNDIFINED;
     Expression();
     virtual ~Expression();
-    virtual Value* codegen(Compiler&) = 0;
+    virtual void codegen(Compiler&) = 0;
+    virtual Value* codegenExpr(Compiler&) = 0;
     virtual bool eval(Analyser&) = 0;
 };
 
