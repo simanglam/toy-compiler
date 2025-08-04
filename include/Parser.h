@@ -4,37 +4,42 @@
 #include "Token.h" 
 #include "Scanner.h"
 
-class BaseExpr;
+class Expression;
 class DeclareNode;
 class BlockNode;
+class Statement;
+class ASTNode;
 
 class Parser{
 private:
     Scanner& s;
-    BaseExpr* parsePrimary();
-    BaseExpr* parseUnary();
-    BaseExpr* parseIndExpression();
-    BaseExpr* parseParExpression();
-    BaseExpr* parseExpression();
-    BaseExpr* parseInteger();
-    BaseExpr* parseDouble();
-    BaseExpr* parseGlobalDeclare();
-    BaseExpr* parseBinOpRhs(int, BaseExpr*);
-    BaseExpr* parseFunction(string, TOKENS);
-    DeclareNode* parseDeclare();
+    ASTNode* parseLinePrimary();
+    Expression* parsePrimary();
+    Expression* parseUnary();
+    Expression* parseIndExpression();
+    Expression* parseParExpression();
+    Expression* parseExpression();
+    Expression* parseInteger();
+    Expression* parseDouble();
+    Expression* parseBinOpRhs(int, Expression*);
     BlockNode* parseBlock();
-    BaseExpr* parseReturn();
+    Statement* parseReturn();
+    Statement* parseFunction(string, TOKENS);
+    Statement* parseGlobalDeclare();
+    Statement* parseDeclare();
     DeclareNode* parseFunctionDeclare();
-    BaseExpr* parseIf();
+    Statement* parseIf();
 
 public:
     Parser();
     Parser(Scanner&);
     ~Parser();
-    BaseExpr* parseLine();
+    ASTNode* parseLine();
 };
 
-#include "asts/BaseExpr.h"
+#include "asts/ASTNode.h"
+#include "asts/Expression.h"
+#include "asts/Statement.h"
 #include "asts/BlockNode.h"
 #include "asts/DeclareNode.h"
 #include "asts/FunctionAST.h"

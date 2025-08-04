@@ -1,15 +1,17 @@
 #ifndef __FunctionCallExpr_HEADER__
 #define __FunctionCallExpr_HEADER__
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
+#include <vector>
+#include <string>
 
-class FunctionCallExpr : public BaseExpr{
-    vector<BaseExpr *> args;
-    string name;
+class FunctionCallExpr : public Expression{
+    std::vector<Expression *> args;
+    std::string name;
 public:
-    FunctionCallExpr(string&, vector<BaseExpr*>&);
+    FunctionCallExpr(std::string&, std::vector<Expression*>&);
     ~FunctionCallExpr();
-    Value* codegen(Compiler&) override;
+    llvm::Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

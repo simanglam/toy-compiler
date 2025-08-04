@@ -1,17 +1,16 @@
 #ifndef __BlockNode_HEADER__
 #define __BlockNode_HEADER__
-class BlockNode;
 
 #include <vector>
+#include "asts/Statement.h"
+#include "asts/ASTNode.h"
 
-#include "asts/BaseExpr.h"
-
-class BlockNode : public BaseExpr {
-    vector<BaseExpr*> expressions;
+class BlockNode : public Statement {
+    std::vector<ASTNode*> expressions;
 public:
-    BlockNode(vector<BaseExpr*>);
+    BlockNode(std::vector<ASTNode*>);
     ~BlockNode();
-    llvm::Value* codegen(Compiler&) override;
+    void codegen(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

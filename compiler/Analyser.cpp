@@ -8,6 +8,6 @@ Analyser::~Analyser() {
     
 }
 
-bool Analyser::eval(BaseExpr* e) {
+bool Analyser::eval(Expression* e) {
     e->eval(*this);
 }

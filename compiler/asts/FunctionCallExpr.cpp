@@ -1,21 +1,27 @@
-
 #include "asts/FunctionCallExpr.h"
+#include "Compiler.h"
+#include "Analyser.h"
 
-FunctionCallExpr::FunctionCallExpr(string& _name, vector<BaseExpr*>& _args): name(_name), args(_args) {
+#include <llvm/IR/Value.h>
+
+using namespace std;
+using namespace llvm;
+
+FunctionCallExpr::FunctionCallExpr(string& _name, vector<Expression*>& _args): name(_name), args(_args) {
 
 }
 
 FunctionCallExpr::~FunctionCallExpr() {
-    for (BaseExpr* arg : args)
+    for (Expression* arg : args)
         delete arg;
 }
 
-Value* FunctionCallExpr::codegen(Compiler& c) {
+Value* FunctionCallExpr::codegenExpr(Compiler& c) {
     Function* f = c.TheModule->getFunction(name);
     if (!f) return nullptr;
     vector<Value*> argValues;
-    for (BaseExpr* arg : args)
-        argValues.push_back(arg->codegen(c));
+    for (Expression* arg : args)
+        argValues.push_back(arg->codegenExpr(c));
     return c.Builder->CreateCall(f, argValues, "calltmp");
 }
 

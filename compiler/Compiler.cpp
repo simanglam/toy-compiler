@@ -8,6 +8,7 @@
 #include "llvm/IR/LegacyPassManager.h"
 
 #include "Compiler.h"
+#include "Analyser.h"
 
 Compiler::Compiler(CommandLineOptions& _options): options(_options) {
     
@@ -18,7 +19,7 @@ Compiler::~Compiler() {
 }
 
 bool Compiler::compile() {
-    BaseExpr* ast;
+    ASTNode* ast = nullptr;
     if (options.inputs.size() != 0) {
         for (string file : options.inputs) {
             fstream f(file);
@@ -30,7 +31,7 @@ bool Compiler::compile() {
             Builder = new IRBuilder<>(*TheContext);
             bool result = true;
             while ((ast = p.parseLine()) != nullptr){
-                result = result && ast->eval(a);
+                result = ast->eval(a) && result;
                 ast->codegen(*this);
                 delete ast;
             }
@@ -49,7 +50,7 @@ bool Compiler::compile() {
         TheModule = new Module("STDIN", *TheContext);
         Builder = new IRBuilder<>(*TheContext);
         while ((ast = p.parseLine()) != nullptr){
-            result = result && ast->eval(a);
+            result = ast->eval(a) && result;
             ast->codegen(*this);
             delete ast;
         }
@@ -130,4 +131,9 @@ bool Compiler::writeToFile(outputType outputFileType, string& fileName) {
 AllocaInst* Compiler::allocateVar(llvm::Type* type, string& name) {
     IRBuilder<> tempB(&currentFunction->getEntryBlock(), currentFunction->getEntryBlock().begin());
     return tempB.CreateAlloca(type, nullptr, Twine(name.c_str()));
+}
+
+AllocaInst* Compiler::allocateArray(llvm::Type* type, Value* arraySize, string& name) {
+    IRBuilder<> tempB(&currentFunction->getEntryBlock(), currentFunction->getEntryBlock().begin());
+    return tempB.CreateAlloca(type, arraySize, Twine(name.c_str()));
 }

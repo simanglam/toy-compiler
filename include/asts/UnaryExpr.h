@@ -1,15 +1,16 @@
 #ifndef __UnaryExpr_HEADER__
 #define __UnaryExpr_HEADER__
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
+#include "Token.h"
 
-class UnaryExpr : public BaseExpr {
-    BaseExpr* target;
+class UnaryExpr : public Expression {
+    Expression* target;
     TOKENS op;
 public:
-    UnaryExpr(BaseExpr*, TOKENS);
+    UnaryExpr(Expression*, TOKENS);
     ~UnaryExpr();
-    Value* codegen(Compiler&) override;
+    llvm::Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

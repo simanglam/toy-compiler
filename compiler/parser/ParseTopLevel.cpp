@@ -5,7 +5,7 @@
 #include "asts/PrototypeAST.h"
 #include "asts/FunctionAST.h"
 #include "asts/ReturnStatement.h"
-#include "asts/IfExpr.h"
+#include "asts/IfStatement.h"
 #include "asts/ErrorExpr.h"
 #include "asts/ConstExpr.h"
 #include <string>
@@ -14,7 +14,7 @@ Parser::Parser(Scanner& _s): s(_s) {}
 
 Parser::~Parser() {}
 
-BaseExpr* Parser::parseLine() {
+ASTNode* Parser::parseLine() {
     switch (s.getToken().type){
     case TOK_EOF:
         return nullptr;
@@ -32,16 +32,16 @@ BaseExpr* Parser::parseLine() {
     return new ErrorExpr("Unexpect Token: " + s.currentToken.strLiteral + " when parsing line");
 }
 
-BaseExpr* Parser::parseGlobalDeclare() {
+Statement* Parser::parseGlobalDeclare() {
     TOKENS type = s.currentToken.type;
     if (s.getToken().type != TOK_IND) {
         s.getToken();
-        return new ErrorExpr("Expect identifier at line: " + to_string(s.getCurrentLine()) + " but get " + s.currentToken.strLiteral + " instead.");
+        return (Statement*) new ErrorExpr("Expect identifier at line: " + to_string(s.getCurrentLine()) + " but get " + s.currentToken.strLiteral + " instead.");
     }
 
     string name = s.currentToken.strLiteral;
     s.getToken();
-    BaseExpr* node = nullptr;
+    Statement* node = nullptr;
 
     if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
@@ -58,40 +58,47 @@ BaseExpr* Parser::parseGlobalDeclare() {
 
     if (s.currentToken.type != TOK_SEMI) {
         s.getToken();
-        return new ErrorExpr("Expect semi-colon at line: " + to_string(s.getCurrentLine()));
+        return (Statement*) new ErrorExpr("Expect semi-colon at line: " + to_string(s.getCurrentLine()));
     }
     else {
         return node;
     }
 
-    return new ErrorExpr("Unexpect token at line: " + to_string(s.getCurrentLine()) + " " + s.currentToken.strLiteral);
+    return (Statement*) new ErrorExpr("Unexpect token at line: " + to_string(s.getCurrentLine()) + " " + s.currentToken.strLiteral);
 }
 
 
 BlockNode* Parser::parseBlock() {
-    vector<BaseExpr *> exps;
+    vector<ASTNode*> exps;
     while (s.getToken().type != TOK_CUR_RIGHT && s.currentToken.type != TOK_EOF) {
-        exps.push_back(parsePrimary());
+        exps.push_back(parseLinePrimary());
     }
     return new BlockNode(exps);
 }
 
-BaseExpr* Parser::parsePrimary() {
-    switch (s.currentToken.type){
-        case TOK_OP_NOT:
-        case TOK_OP_MINUS:
-            return parseUnary();
+ASTNode* Parser::parseLinePrimary() {
+    switch (s.currentToken.type) {
         case TOK_IF:
             return parseIf();
         case TOK_TYPE_INT:
         case TOK_TYPE_DOUBLE:
             return parseDeclare();
+        case TOK_RETURN:
+            return parseReturn();
+        default:
+            return parsePrimary();
+    }
+}
+
+Expression* Parser::parsePrimary() {
+    switch (s.currentToken.type){
+        case TOK_OP_NOT:
+        case TOK_OP_MINUS:
+            return parseUnary();
         case TOK_INT:
             return parseInteger();
         case TOK_FLOAT:
             return parseDouble();
-        case TOK_RETURN:
-            return parseReturn();
         case TOK_IND:
             return parseIndExpression();
         case TOK_OP_LEFTPAR:

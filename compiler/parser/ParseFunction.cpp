@@ -7,7 +7,7 @@
 #include "asts/ErrorExpr.h"
 
 
-BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
+Statement* Parser::parseFunction(string name, TOKENS returnType) {
     vector<DeclareNode*> args;
     while (s.currentToken.type != TOK_OP_RIGHTPAR){
         s.getToken();
@@ -18,7 +18,7 @@ BaseExpr* Parser::parseFunction(string name, TOKENS returnType) {
         return new PrototypeAST(name, args, returnType);
     }
     if (s.currentToken.type != TOK_CUR_LEFT){ 
-        return new ErrorExpr("expect { or ;");
+        return (Statement*) new ErrorExpr("expect { or ;");
     }
     return new FunctionAST(new PrototypeAST(name, args, returnType), parseBlock());
 }

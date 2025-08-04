@@ -1,26 +1,29 @@
-#include "asts/IfExpr.h"
+#include "asts/IfStatement.h"
 
-#include "llvm/IR/BasicBlock.h"
+#include <llvm/IR/BasicBlock.h>
+
+#include "Compiler.h"
+#include "Analyser.h"
 
 using namespace llvm;
 
 
-IfExpr::IfExpr(BaseExpr* _cond, BlockNode* _ifBody, BlockNode* _thenBody): cond(_cond), ifBody(_ifBody), thenBody(_thenBody) {
+IfStatement::IfStatement(Expression* _cond, BlockNode* _ifBody, BlockNode* _thenBody): cond(_cond), ifBody(_ifBody), thenBody(_thenBody) {
     
 }
 
-IfExpr::~IfExpr(){
+IfStatement::~IfStatement(){
     delete cond;
     delete ifBody;
     delete thenBody;
 }
 
-Value* IfExpr::codegen(Compiler& c) {
+void IfStatement::codegen(Compiler& c) {
     BasicBlock* thenBlock = BasicBlock::Create(*c.TheContext, "then", c.currentFunction);
     BasicBlock* elseBlock = BasicBlock::Create(*c.TheContext, "else");
     BasicBlock* mergeBlock = BasicBlock::Create(*c.TheContext, "ifcont");
-    Value* v = cond->codegen(c);
-    if (!v) return nullptr;
+    Value* v = cond->codegenExpr(c);
+    if (!v) return ;
     if (cond->evalType != INTEGER) {
         v = c.Builder->CreateFCmpONE(v, ConstantFP::get(v->getType(), 0.0), "ifcond");
     }
@@ -40,12 +43,15 @@ Value* IfExpr::codegen(Compiler& c) {
     c.Builder->CreateBr(mergeBlock);
     c.currentFunction->insert(c.currentFunction->end(), mergeBlock);
     c.Builder->SetInsertPoint(mergeBlock);
-    return nullptr;
+    return ;
 }
 
-bool IfExpr::eval(Analyser& a) {
+bool IfStatement::eval(Analyser& a) {
     bool result = true;
+    result = cond->eval(a) && result;
+    result = ifBody->eval(a) && result;
+    
     if (thenBody)
-        result && thenBody->eval(a);
-    return result && cond->eval(a) && ifBody->eval(a);
+        result = thenBody->eval(a) && result;
+    return result;
 }

@@ -3,6 +3,9 @@
 #include <llvm/IR/BasicBlock.h>
 #include <llvm/IR/Function.h>
 
+#include "Compiler.h"
+#include "Analyser.h"
+
 using namespace llvm;
 
 FunctionAST::FunctionAST(PrototypeAST* _proto, BlockNode* _body): proto(_proto), body(_body) {
@@ -13,12 +16,13 @@ FunctionAST::~FunctionAST() {
     delete proto; delete body;
 }
 
-Function* FunctionAST::codegen(Compiler& c) {
+void FunctionAST::codegen(Compiler& c) {
     Function* F = c.TheModule->getFunction(proto->getName());
 
-    if (!F) F = proto->codegen(c);
-    if (!F) return nullptr;
-    if (!F->empty()) return nullptr;
+    if (!F) proto->codegen(c);
+    F = c.TheModule->getFunction(proto->getName());
+    if (!F) return ;
+    if (!F->empty()) return ;
 
     c.currentFunction = F;
     BasicBlock* BB = BasicBlock::Create(*c.TheContext, "entry", F);
@@ -47,8 +51,6 @@ Function* FunctionAST::codegen(Compiler& c) {
         c.Builder->CreateRet(ConstantFP::get(F->getReturnType(), 0.0));
     else
         c.Builder->CreateRet(ConstantInt::get(F->getReturnType(), 0, true));
-
-    return F;
 }
 
 bool FunctionAST::eval(Analyser& a) {

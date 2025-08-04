@@ -14,42 +14,41 @@ Value* castToSameType(Compiler& c, EVALTYPE target, Value* storeValue) {
     return storeValue;
 }
 
-BinaryOpNode::BinaryOpNode(BaseExpr* _lhs, TOKENS _op, BaseExpr* _rhs): lhs(_lhs), op(_op), rhs(_rhs) {}
+BinaryOpNode::BinaryOpNode(Expression* _lhs, TOKENS _op, Expression* _rhs): lhs(_lhs), op(_op), rhs(_rhs) {}
 
 BinaryOpNode::~BinaryOpNode() {
     delete lhs; delete rhs;
 }
 
 
-Value* BinaryOpNode::codegen(Compiler& c) {
-
+Value* BinaryOpNode::codegenExpr(Compiler& c) {
     if (op == TOK_OP_ASSIGN) {
-        VariableNode* lid = static_cast<VariableNode*>(lhs);
-        if (!lid)  {
-            cerr << "Expect variable at lhs of assign operator" << endl;
+        if (!lhs->isLvalue())  {
+            cerr << "Expect lvalue at lhs of assign operator" << endl;
             return nullptr;
         }
-        Value* var = c.localVariables[lid->getName()]; 
-        if (!var) var = c.globalVar[lid->getName()];
+        Value* var = lhs->codegenAddr(c);
+        assert(var != nullptr);
         
-        Value* storeValue = rhs->codegen(c);
+        Value* storeValue = rhs->codegenExpr(c);
         if (lhs->evalType != rhs->evalType){
             storeValue = castToSameType(c, lhs->evalType, storeValue);
         }
-        c.Builder->CreateStore(storeValue, var);
-        return var;
+        return c.Builder->CreateStore(storeValue, var);
     }
     
 
-    llvm::Value* lhsCode = lhs->codegen(c);
-    llvm::Value* rhsCode = rhs->codegen(c);
+    llvm::Value* lhsCode = lhs->codegenExpr(c);
+    llvm::Value* rhsCode = rhs->codegenExpr(c);
     if (!lhsCode || !rhsCode)
         return nullptr;
     if (lhs->evalType != evalType) {
         lhsCode = castToSameType(c, evalType, lhsCode);
+        lhs->evalType = evalType;
     }
     if (rhs->evalType != evalType) {
         rhsCode = castToSameType(c, evalType, rhsCode);
+        rhs->evalType = evalType;
     }
 
     Value* returnVal = nullptr;
@@ -65,16 +64,22 @@ Value* BinaryOpNode::codegen(Compiler& c) {
                 return c.Builder->CreateSDiv(lhsCode, rhsCode, "divtmp");
             case TOK_OP_UNEQUAL:
                 returnVal = c.Builder->CreateICmpNE(lhsCode, rhsCode, "uneqltemp");
+                break;
             case TOK_OP_EQUAL:
                 returnVal = c.Builder->CreateICmpEQ(lhsCode, rhsCode, "eqltemp");
+                break;
             case TOK_OP_LE:
                 returnVal = c.Builder->CreateICmpSLE(lhsCode, rhsCode, "leqtemp");
+                break;
             case TOK_OP_LT:
                 returnVal = c.Builder->CreateICmpSLT(lhsCode, rhsCode, "ltemp");
+                break;
             case TOK_OP_GE:
                 returnVal = c.Builder->CreateICmpSGE(lhsCode, rhsCode, "geqtemp");
+                break;
             case TOK_OP_GT:
                 returnVal = c.Builder->CreateICmpSGT(lhsCode, rhsCode, "gttemp");
+                break;
             default:
                 break;
         }
@@ -91,19 +96,30 @@ Value* BinaryOpNode::codegen(Compiler& c) {
                 return c.Builder->CreateFDiv(lhsCode, rhsCode, "divtmp");
             case TOK_OP_UNEQUAL:
                 returnVal = c.Builder->CreateFCmpONE(lhsCode, rhsCode, "uneqltemp");
+                break;
             case TOK_OP_EQUAL:
                 returnVal = c.Builder->CreateFCmpOEQ(lhsCode, rhsCode, "eqltemp");
+                break;
             case TOK_OP_LE:
                 returnVal = c.Builder->CreateFCmpOLE(lhsCode, rhsCode, "leqtemp");
+                break;
             case TOK_OP_LT:
                 returnVal = c.Builder->CreateFCmpOLT(lhsCode, rhsCode, "ltemp");
+                break;
             case TOK_OP_GE:
                 returnVal = c.Builder->CreateFCmpOGE(lhsCode, rhsCode, "geqtemp");
+                break;
             case TOK_OP_GT:
                 returnVal = c.Builder->CreateFCmpOGT(lhsCode, rhsCode, "gttemp");
+                break;
             default:
                 break;
         }
+    }
+
+    if (op == TOK_OP_LEFTBRA) {
+        Value* v = c.Builder->CreateGEP(lhsCode->getType(), lhsCode, rhsCode, "array");
+        return c.Builder->CreateLoad(c.Builder->getInt32Ty(), v, "arrayElement");
     }
 
     if (lhs->evalType == FLOAT)
@@ -122,46 +138,67 @@ Value* BinaryOpNode::codegen(Compiler& c) {
         case TOK_OP_OR:
             returnVal = c.Builder->CreateLogicalOr(lhsCode, rhsCode, "logicalAnd");
             break;
-
+        case TOK_OP_LEFTBRA:
+            return c.Builder->CreateGEP(lhsCode->getType(), lhsCode, {c.Builder->getInt32(0), rhsCode}, "array");
+            //return c.Builder->CreateExtractElement(c.Builder->CreateGEP(lhsCode->getType(), lhsCode, {c.Builder->getInt32(0), rhs}, "array"), rhsCode, "Element");
         default:
             break;
     }
+
 
     return c.Builder->CreateIntCast(returnVal, Type::getInt32Ty(*c.TheContext), true, "intCast");
     
 }
 
 bool BinaryOpNode::eval(Analyser& a) {
-    bool result = lhs->eval(a);
-    result = result && rhs->eval(a);
+    bool lhsEval = lhs->eval(a);
+    bool rhsEval = rhs->eval(a);
+
+    if (!lhsEval || !rhsEval)
+        return false;
 
     switch (op) {    
-        case TOK_OP_AND:
-        case TOK_OP_OR: 
-        case TOK_OP_LT:
-        case TOK_OP_GT: 
-        case TOK_OP_LE:
-        case TOK_OP_GE:
-        case TOK_OP_EQUAL:
-        case TOK_OP_UNEQUAL:
+        case TOK_OP_AND: case TOK_OP_OR: 
+        case TOK_OP_LT: case TOK_OP_GT: 
+        case TOK_OP_LE: case TOK_OP_GE:
+        case TOK_OP_EQUAL: case TOK_OP_UNEQUAL:
             evalType = INTEGER;
             break;
         case TOK_OP_ASSIGN:
             evalType = lhs->evalType;
+            if (!lhs->isLvalue()) {
+                cerr << "Expect Lvalue at left hand side of assignment." << endl;
+                return false;
+            }
+            break;
+        case TOK_OP_LEFTBRA:
+            assert(rhs->evalType == INTEGER);
+            if (lhs->evalType == INT_POINTER)
+                evalType = INTEGER;
+            else
+                evalType = FLOAT;
             break;
         default:
             if (lhs->evalType != rhs->evalType){
-                if (op == TOK_OP_ASSIGN){
-                    evalType = lhs->evalType;
-                }
-                else {
-                    evalType = INTEGER;
-                }
+                evalType = INTEGER;
             }
             else {
                 evalType = lhs->evalType;
             }
             break;
     }
-    return result;
+    return true;
+}
+
+bool BinaryOpNode::isLvalue() {
+    return op == TOK_OP_LEFTBRA && lhs->isLvalue();
+}
+
+Value* BinaryOpNode::codegenAddr(Compiler& c) {
+    if (op != TOK_OP_LEFTBRA)
+        return nullptr;
+    Value* lhsCode = lhs->codegenExpr(c);
+    Value* rhsCode = rhs->codegenExpr(c);
+    Value* v = c.Builder->CreateGEP(lhsCode->getType(), lhsCode, rhsCode, "arrayPointer");
+    return v;
 }

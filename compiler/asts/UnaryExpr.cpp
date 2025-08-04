@@ -1,13 +1,17 @@
 #include "asts/UnaryExpr.h"
 
-UnaryExpr::UnaryExpr(BaseExpr* _target, TOKENS _op): target(_target), op(_op) {}
+#include "Compiler.h"
+#include "Analyser.h"
+
+
+UnaryExpr::UnaryExpr(Expression* _target, TOKENS _op): target(_target), op(_op) {}
 
 UnaryExpr::~UnaryExpr() {
     delete target;
 }
 
-Value* UnaryExpr::codegen(Compiler& c) {
-    Value* v = target->codegen(c);
+Value* UnaryExpr::codegenExpr(Compiler& c) {
+    Value* v = target->codegenExpr(c);
     if (op == TOK_OP_NOT){
         if (target->evalType == FLOAT)
             v = c.Builder->CreateFCmpONE(v, ConstantFP::get(v->getType(), 0.0), "fcmp");

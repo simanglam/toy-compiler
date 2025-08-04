@@ -1,20 +1,24 @@
 #ifndef __VariableNode_HEADER__
 #define __VariableNode_HEADER__
 
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 #include <llvm/IR/Value.h>
 #include <string>
 
 using namespace llvm;
 using namespace std;
 
-class VariableNode : public BaseExpr {
+class VariableNode : public Expression {
     string name;
 public:
     VariableNode(string);
-    Value* codegen(Compiler&) override;
     string& getName();
+    Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
+    virtual llvm::Value* codegenAddr(Compiler&) override;
+    bool isLvalue() override;
+    bool isConstantExpr() override;
+    double getValue() override;
 };
 
 #endif

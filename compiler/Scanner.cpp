@@ -187,6 +187,18 @@ Token Scanner::getToken(){
             currentChar = nextChar;
             file >> nextChar;
             break;
+        case '[':
+            nextToken.type = TOK_OP_LEFTBRA;
+            nextToken.strLiteral = "]";
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
+        case ']':
+            nextToken.type = TOK_OP_RIGHTBRA;
+            nextToken.strLiteral = "]";
+            currentChar = nextChar;
+            file >> nextChar;
+            break;
         default:
             string buffString("");
             if (isNum(currentChar)){
@@ -227,7 +239,7 @@ Token Scanner::getToken(){
             else {
                 nextToken.type = TOK_ERROR;
                 nextToken.strLiteral = nextChar;
-                cerr << "Unknow Token: " << nextToken.strLiteral << endl;
+                cerr << "Unknow Token: " << nextChar<< endl;
             }
     }
 

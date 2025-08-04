@@ -1,25 +1,27 @@
 #include "asts/BlockNode.h"
 
-BlockNode::BlockNode(vector<BaseExpr*> _expressions): expressions(_expressions){
+using namespace std;
+
+BlockNode::BlockNode(vector<ASTNode*> _expressions): expressions(_expressions){
     
 }
 
 BlockNode::~BlockNode(){
-    for (BaseExpr* e : expressions){
+    for (ASTNode* e : expressions){
         delete e;
     }
 }
 
-Value* BlockNode::codegen(Compiler& c) {
-    for (BaseExpr* e : expressions){
+void BlockNode::codegen(Compiler& c) {
+    for (ASTNode* e : expressions){
         e->codegen(c);
     }
 }
 
 bool BlockNode::eval(Analyser& c) {
     bool result = true;
-    for (BaseExpr* e : expressions){
-        result = result && e->eval(c);
+    for (ASTNode* e : expressions){
+        result = e->eval(c) && result;
     }
     return result;
 }

@@ -2,7 +2,7 @@
 #define __PrototypeAST_HEADER__
 class PrototypeAST;
 
-#include "asts/BaseExpr.h"
+#include "asts/Statement.h"
 #include "asts/DeclareNode.h"
 
 #include <vector>
@@ -11,14 +11,14 @@ class PrototypeAST;
 using namespace llvm;
 
 
-class PrototypeAST: public BaseExpr {
+class PrototypeAST: public Statement {
     TOKENS returnType;
     vector<DeclareNode*> args;
     string name;
 public:
     PrototypeAST(string, vector<DeclareNode*>, TOKENS);
     ~PrototypeAST();
-    Function* codegen(Compiler&) override;
+    void codegen(Compiler&) override;
     string getName();
     vector<DeclareNode*>& getArgs();
     bool eval(Analyser&) override;

@@ -1,15 +1,17 @@
 #ifndef __ErrorExpr_HEADER__
 #define __ErrorExpr_HEADER__
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
+#include <string>
 
 class Compiler;
 
-class ErrorExpr : public BaseExpr{
-    string message;
+class ErrorExpr : public Expression{
+    std::string message;
 public:
-    ErrorExpr(string);
+    ErrorExpr(std::string);
     ~ErrorExpr();
-    Value* codegen(Compiler&) override;
+    void codegen(Compiler&) override;
+    llvm::Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
 };
 

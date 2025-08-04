@@ -3,14 +3,14 @@
 class ReturnStatement;
 
 #include "Compiler.h"
-#include "asts/BaseExpr.h"
+#include "asts/Expression.h"
 
-class ReturnStatement: public BaseExpr {
-    BaseExpr* expr;
+class ReturnStatement: public Statement {
+    Expression* expr;
 public:
-    ReturnStatement(BaseExpr*);
+    ReturnStatement(Expression*);
     ~ReturnStatement();
-    Value* codegen(Compiler&) override;
+    void codegen(Compiler&) override;
     bool eval(Analyser&) override;
 };
 
