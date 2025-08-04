@@ -8,17 +8,17 @@
 using namespace llvm;
 
 
-IfExpr::IfExpr(Expression* _cond, BlockNode* _ifBody, BlockNode* _thenBody): cond(_cond), ifBody(_ifBody), thenBody(_thenBody) {
+IfStatement::IfStatement(Expression* _cond, BlockNode* _ifBody, BlockNode* _thenBody): cond(_cond), ifBody(_ifBody), thenBody(_thenBody) {
     
 }
 
-IfExpr::~IfExpr(){
+IfStatement::~IfStatement(){
     delete cond;
     delete ifBody;
     delete thenBody;
 }
 
-void IfExpr::codegen(Compiler& c) {
+void IfStatement::codegen(Compiler& c) {
     BasicBlock* thenBlock = BasicBlock::Create(*c.TheContext, "then", c.currentFunction);
     BasicBlock* elseBlock = BasicBlock::Create(*c.TheContext, "else");
     BasicBlock* mergeBlock = BasicBlock::Create(*c.TheContext, "ifcont");
@@ -46,7 +46,7 @@ void IfExpr::codegen(Compiler& c) {
     return ;
 }
 
-bool IfExpr::eval(Analyser& a) {
+bool IfStatement::eval(Analyser& a) {
     bool result = true;
     result = cond->eval(a) && result;
     result = ifBody->eval(a) && result;

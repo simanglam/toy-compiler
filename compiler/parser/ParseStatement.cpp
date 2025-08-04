@@ -38,7 +38,7 @@ Statement* Parser::parseIf() {
     }
 
     if (s.nextToken.type != TOK_ELSE) {
-        return new IfExpr(cond, ifBody, nullptr);
+        return new IfStatement(cond, ifBody, nullptr);
     }
     s.getToken();
 
@@ -46,10 +46,10 @@ Statement* Parser::parseIf() {
         vector<ASTNode*> expr;
         expr.reserve(1);
         expr.push_back(parseLinePrimary());
-        return new IfExpr(cond, ifBody, new BlockNode(expr));
+        return new IfStatement(cond, ifBody, new BlockNode(expr));
     }
     else {
-        Statement* node = new IfExpr(cond, ifBody, parseBlock());
+        Statement* node = new IfStatement(cond, ifBody, parseBlock());
         return node;
     }
     return (Statement*) new ErrorExpr("Unexpect token: " + s.currentToken.strLiteral + " when parsing par expr");
@@ -77,15 +77,13 @@ Statement* Parser::parseDeclare() {
         if (s.currentToken.type != TOK_OP_RIGHTPAR)
             arraySizeExpr = parsePrimary();
 
-        // cerr << "An array with size: " << arraySize << endl;
-
         vector<Expression*> initVals;
         if (s.getToken().type == TOK_OP_ASSIGN) {
             assert(s.getToken().type == TOK_CUR_LEFT);
-            while (s.getToken().type != TOK_CUR_RIGHT){
+            do{
+                s.getToken();
                 initVals.push_back(parsePrimary());
-                assert(s.currentToken.type == TOK_COMMA);
-            }
+            } while (s.currentToken.type != TOK_CUR_RIGHT);
             assert(s.getToken().type == TOK_SEMI);
             node = new ArrayDeclare(type, initVals, arraySizeExpr, name);
         }

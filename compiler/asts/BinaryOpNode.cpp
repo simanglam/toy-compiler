@@ -22,7 +22,6 @@ BinaryOpNode::~BinaryOpNode() {
 
 
 Value* BinaryOpNode::codegenExpr(Compiler& c) {
-
     if (op == TOK_OP_ASSIGN) {
         if (!lhs->isLvalue())  {
             cerr << "Expect lvalue at lhs of assign operator" << endl;
@@ -154,24 +153,23 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
 bool BinaryOpNode::eval(Analyser& a) {
     bool lhsEval = lhs->eval(a);
     bool rhsEval = rhs->eval(a);
-    bool result = true;
 
     if (!lhsEval || !rhsEval)
-        result = false;
+        return false;
 
     switch (op) {    
-        case TOK_OP_AND:
-        case TOK_OP_OR: 
-        case TOK_OP_LT:
-        case TOK_OP_GT: 
-        case TOK_OP_LE:
-        case TOK_OP_GE:
-        case TOK_OP_EQUAL:
-        case TOK_OP_UNEQUAL:
+        case TOK_OP_AND: case TOK_OP_OR: 
+        case TOK_OP_LT: case TOK_OP_GT: 
+        case TOK_OP_LE: case TOK_OP_GE:
+        case TOK_OP_EQUAL: case TOK_OP_UNEQUAL:
             evalType = INTEGER;
             break;
         case TOK_OP_ASSIGN:
             evalType = lhs->evalType;
+            if (!lhs->isLvalue()) {
+                cerr << "Expect Lvalue at left hand side of assignment." << endl;
+                return false;
+            }
             break;
         default:
             if (lhs->evalType != rhs->evalType){
@@ -182,11 +180,11 @@ bool BinaryOpNode::eval(Analyser& a) {
             }
             break;
     }
-    return result;
+    return true;
 }
 
 bool BinaryOpNode::isLvalue() {
-    return op == TOK_OP_LEFTBRA;
+    return op == TOK_OP_LEFTBRA && lhs->isLvalue();
 }
 
 Value* BinaryOpNode::codegenAddr(Compiler& c) {
@@ -194,6 +192,6 @@ Value* BinaryOpNode::codegenAddr(Compiler& c) {
         return nullptr;
     Value* lhsCode = lhs->codegenExpr(c);
     Value* rhsCode = rhs->codegenExpr(c);
-    Value* v = c.Builder->CreateGEP(lhsCode->getType(), lhsCode, rhsCode, "array");
+    Value* v = c.Builder->CreateGEP(lhsCode->getType(), lhsCode, rhsCode, "arrayPointer");
     return v;
 }

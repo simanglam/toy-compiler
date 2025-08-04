@@ -34,9 +34,15 @@ void ArrayDeclare::codegen(Compiler& c) {
     }
     string old_name = name;
     AllocaInst* arrayPointer = c.allocateVar(type->getPointerTo(), (name.append("body")));
-    AllocaInst* arrayAlloc = c.allocateArray(type, size->codegenExpr(c), old_name);
     c.localVariables[old_name] = arrayPointer;
+    AllocaInst* arrayAlloc = c.allocateArray(type, size->codegenExpr(c), old_name);
     c.Builder->CreateStore(arrayAlloc, arrayPointer);
+    c.Builder->CreateMemSet(c.Builder->CreateGEP(arrayPointer->getType(), c.Builder->CreateLoad(arrayPointer->getAllocatedType(), arrayPointer), {c.Builder->getInt32(0)}), c.Builder->getInt8(0), size->codegenExpr(c), arrayAlloc->getAlign());
+    
+    int idx = 0;
+    for (Expression* e : values) {
+        c.Builder->CreateStore(e->codegenExpr(c), c.Builder->CreateGEP(arrayPointer->getType(), c.Builder->CreateLoad(arrayPointer->getAllocatedType(), arrayPointer), {c.Builder->getInt32(idx++)}));
+    }
 }
 
 bool ArrayDeclare::eval(Analyser& a) {
