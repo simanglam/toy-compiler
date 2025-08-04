@@ -171,6 +171,13 @@ bool BinaryOpNode::eval(Analyser& a) {
                 return false;
             }
             break;
+        case TOK_OP_LEFTBRA:
+            assert(rhs->evalType == INTEGER);
+            if (lhs->evalType == INT_POINTER)
+                evalType = INTEGER;
+            else
+                evalType = FLOAT;
+            break;
         default:
             if (lhs->evalType != rhs->evalType){
                 evalType = INTEGER;
