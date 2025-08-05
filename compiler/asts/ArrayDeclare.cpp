@@ -46,6 +46,6 @@ void ArrayDeclare::codegen(Compiler& c) {
 }
 
 bool ArrayDeclare::eval(Analyser& a) {
-    a.localSymbolTable[name] = INTEGER;
+    a.localSymbolTable[name] = INT_POINTER;
     return true;
 }

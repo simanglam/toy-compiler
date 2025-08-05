@@ -1,6 +1,7 @@
 #include "Compiler.h"
 #include "asts/BinaryOpNode.h"
 #include "asts/VariableNode.h"
+#include "asts/CastNode.h"
 
 Value* castToSameType(Compiler& c, EVALTYPE target, Value* storeValue) {
     switch (target){
@@ -42,17 +43,9 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
     llvm::Value* rhsCode = rhs->codegenExpr(c);
     if (!lhsCode || !rhsCode)
         return nullptr;
-    if (lhs->evalType != evalType) {
-        lhsCode = castToSameType(c, evalType, lhsCode);
-        lhs->evalType = evalType;
-    }
-    if (rhs->evalType != evalType) {
-        rhsCode = castToSameType(c, evalType, rhsCode);
-        rhs->evalType = evalType;
-    }
 
     Value* returnVal = nullptr;
-    if (rhs->evalType == INTEGER) {
+    if (evalType == INTEGER) {
         switch (op) {
             case TOK_OP_ADD:
                 return c.Builder->CreateAdd(lhsCode, rhsCode, "addtmp");
@@ -84,7 +77,7 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
                 break;
         }
     }
-    if (rhs->evalType == FLOAT) {
+    if (evalType == FLOAT) {
         switch (op){
             case TOK_OP_ADD:
                 return c.Builder->CreateFAdd(lhsCode, rhsCode, "addtmp");
@@ -180,7 +173,9 @@ bool BinaryOpNode::eval(Analyser& a) {
             break;
         default:
             if (lhs->evalType != rhs->evalType){
-                evalType = INTEGER;
+                rhs = new CastNode(rhs, lhs->evalType, CastNodeStrategy::getCastStrategy(rhs->evalType));
+                rhs->eval(a);
+                evalType = lhs->evalType;
             }
             else {
                 evalType = lhs->evalType;
