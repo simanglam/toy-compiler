@@ -1,9 +1,10 @@
-#include "asts/IfStatement.h"
-
 #include <llvm/IR/BasicBlock.h>
 
 #include "Compiler.h"
 #include "Analyser.h"
+
+#include "asts/CastNode.h"
+#include "asts/IfStatement.h"
 
 using namespace llvm;
 
@@ -23,13 +24,9 @@ void IfStatement::codegen(Compiler& c) {
     BasicBlock* elseBlock = BasicBlock::Create(*c.TheContext, "else");
     BasicBlock* mergeBlock = BasicBlock::Create(*c.TheContext, "ifcont");
     Value* v = cond->codegenExpr(c);
+
     if (!v) return ;
-    if (cond->evalType != INTEGER) {
-        v = c.Builder->CreateFCmpONE(v, ConstantFP::get(v->getType(), 0.0), "ifcond");
-    }
-    else {
-        v = c.Builder->CreateICmpNE(v, ConstantInt::get(v->getType(), 0, true), "ifcond");
-    }
+
     c.Builder->CreateCondBr(v, thenBlock, elseBlock);
     c.Builder->SetInsertPoint(thenBlock);
     ifBody->codegen(c);
@@ -37,9 +34,11 @@ void IfStatement::codegen(Compiler& c) {
     c.currentFunction->insert(c.currentFunction->end(), elseBlock);
     c.Builder->CreateBr(mergeBlock);
     c.Builder->SetInsertPoint(elseBlock);
+
     if (thenBody) {
         thenBody->codegen(c);
     }
+    
     c.Builder->CreateBr(mergeBlock);
     c.currentFunction->insert(c.currentFunction->end(), mergeBlock);
     c.Builder->SetInsertPoint(mergeBlock);
@@ -49,6 +48,10 @@ void IfStatement::codegen(Compiler& c) {
 bool IfStatement::eval(Analyser& a) {
     bool result = true;
     result = cond->eval(a) && result;
+    if (cond->evalType != BOOL) {
+        cond = new CastNode(cond, BOOL, CastNodeStrategy::getCastStrategy(cond->evalType));
+    }
+        
     result = ifBody->eval(a) && result;
     
     if (thenBody)

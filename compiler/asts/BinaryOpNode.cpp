@@ -1,7 +1,7 @@
 #include "Compiler.h"
+#include "asts/CastNode.h"
 #include "asts/BinaryOpNode.h"
 #include "asts/VariableNode.h"
-#include "asts/CastNode.h"
 
 Value* castToSameType(Compiler& c, EVALTYPE target, Value* storeValue) {
     switch (target){
@@ -45,7 +45,7 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
         return nullptr;
 
     Value* returnVal = nullptr;
-    if (evalType == INTEGER) {
+    if (lhs->evalType == INTEGER) {
         switch (op) {
             case TOK_OP_ADD:
                 return c.Builder->CreateAdd(lhsCode, rhsCode, "addtmp");
@@ -77,7 +77,7 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
                 break;
         }
     }
-    if (evalType == FLOAT) {
+    if (lhs->evalType == FLOAT) {
         switch (op){
             case TOK_OP_ADD:
                 return c.Builder->CreateFAdd(lhsCode, rhsCode, "addtmp");
@@ -115,15 +115,6 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
         return c.Builder->CreateLoad(c.Builder->getInt32Ty(), v, "arrayElement");
     }
 
-    if (lhs->evalType == FLOAT)
-        lhsCode = c.Builder->CreateFCmpONE(lhsCode, ConstantFP::get(lhsCode->getType(), 0.0), "fcmp");
-    else
-        lhsCode = c.Builder->CreateICmpNE(lhsCode, ConstantInt::get(lhsCode->getType(), 0), "icmp");
-    if (rhs->evalType == FLOAT)
-        rhsCode = c.Builder->CreateFCmpONE(rhsCode, ConstantFP::get(rhsCode->getType(), 0.0), "fcmp");
-    else
-        rhsCode = c.Builder->CreateICmpNE(rhsCode, ConstantInt::get(rhsCode->getType(), 0), "icmp");
-
     switch (op) {
         case TOK_OP_AND:            
             returnVal = c.Builder->CreateLogicalAnd(lhsCode, rhsCode, "logicalAnd");
@@ -137,10 +128,7 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
         default:
             break;
     }
-
-
-    return c.Builder->CreateIntCast(returnVal, Type::getInt32Ty(*c.TheContext), true, "intCast");
-    
+    return returnVal;
 }
 
 bool BinaryOpNode::eval(Analyser& a) {
@@ -154,8 +142,22 @@ bool BinaryOpNode::eval(Analyser& a) {
         case TOK_OP_AND: case TOK_OP_OR: 
         case TOK_OP_LT: case TOK_OP_GT: 
         case TOK_OP_LE: case TOK_OP_GE:
+            if (lhs->evalType != rhs->evalType) {
+                rhs = new CastNode(rhs, lhs->evalType, CastNodeStrategy::getCastStrategy(rhs->evalType));
+                rhs->eval(a);
+            }
+            evalType = BOOL;
+            break;
         case TOK_OP_EQUAL: case TOK_OP_UNEQUAL:
-            evalType = INTEGER;
+            if (lhs->evalType != BOOL) {
+                lhs = new CastNode(lhs, BOOL, CastNodeStrategy::getCastStrategy(lhs->evalType));
+                lhs->eval(a);
+            }
+            if (rhs->evalType != BOOL) {
+                rhs = new CastNode(rhs, BOOL, CastNodeStrategy::getCastStrategy(rhs->evalType));
+                rhs->eval(a);
+            }
+            evalType = BOOL;
             break;
         case TOK_OP_ASSIGN:
             evalType = lhs->evalType;
