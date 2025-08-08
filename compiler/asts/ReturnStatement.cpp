@@ -1,5 +1,6 @@
-#include "asts/ReturnStatement.h"
 #include "Analyser.h"
+#include "asts/CastNode.h"
+#include "asts/ReturnStatement.h"
 
 ReturnStatement::ReturnStatement(Expression* _exp): expr(_exp) {}
 
@@ -15,10 +16,16 @@ bool ReturnStatement::eval(Analyser& a) {
     if (!expr) {
         return true;
     }
-    expr->eval(a);
-    bool result = true && (expr->evalType == a.returnType);
+    bool result =  expr->eval(a) && true;
+
+    if (expr->evalType != a.returnType) {
+        expr = new CastNode(expr, a.returnType, CastNodeStrategy::getCastStrategy(expr->evalType));
+        result = expr->eval(a) && result;
+    }
+
     if (!result) {
         cerr << "Return type error" << endl;
     }
+    
     return result;
 }

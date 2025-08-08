@@ -36,7 +36,15 @@ class IntegerCastStrategy : public CastNodeStrategy {
 public:
 
     llvm::Value* cast(llvm::Value* v, EVALTYPE target, Compiler& c) override {
-
+        switch (target) {
+            case FLOAT:
+                return c.Builder->CreateSIToFP(v, c.Builder->getDoubleTy(), "FpToInt");
+            case BOOL:
+                return c.Builder->CreateICmpNE(v, c.Builder->getInt32(0), "FpToBool");
+            default:
+                cerr << "Not able to cast type Float to typeid: " << target << endl;
+                return nullptr;
+        }
     }
 
     bool eval(EVALTYPE) override {
