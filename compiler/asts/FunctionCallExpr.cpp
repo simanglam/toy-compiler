@@ -1,6 +1,7 @@
-#include "asts/FunctionCallExpr.h"
-#include "Compiler.h"
 #include "Analyser.h"
+#include "Compiler.h"
+#include "asts/CastNode.h"
+#include "asts/FunctionCallExpr.h"
 
 #include <llvm/IR/Value.h>
 
@@ -36,14 +37,14 @@ bool FunctionCallExpr::eval(Analyser& a) {
         return false;
     }
     for (int i = 0; i < args.size(); i++){
-        result = result && args[i]->eval(a);
+        result = args[i]->eval(a) && result;
     }
     for (int i = 0; i < args.size(); i++){
         result = result && (args[i]->evalType == a.functionTable[name].argType[i]);
         if (args[i]->evalType != a.functionTable[name].argType[i]){
-            cerr << "Wrong function argument." << endl;
+            args[i] = new CastNode(args[i], a.functionTable[name].argType[i], CastNodeStrategy::getCastStrategy(args[i]->evalType));
+            result = args[i]->eval(a) && result;
         }
     }
     evalType = a.functionTable[name].returnType;
     return true;
-}

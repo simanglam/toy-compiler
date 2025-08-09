@@ -38,17 +38,25 @@ public:
     llvm::Value* cast(llvm::Value* v, EVALTYPE target, Compiler& c) override {
         switch (target) {
             case FLOAT:
-                return c.Builder->CreateSIToFP(v, c.Builder->getDoubleTy(), "FpToInt");
+                return c.Builder->CreateSIToFP(v, c.Builder->getDoubleTy(), "IntToFp");
             case BOOL:
                 return c.Builder->CreateICmpNE(v, c.Builder->getInt32(0), "FpToBool");
             default:
-                cerr << "Not able to cast type Float to typeid: " << target << endl;
+                cerr << "Not able to cast type Integer to typeid: " << target << endl;
                 return nullptr;
         }
     }
 
-    bool eval(EVALTYPE) override {
-
+    bool eval(EVALTYPE target) override {
+        switch (target) {
+            case FLOAT:
+                return true;
+            case BOOL:
+                return true;
+            default:
+                cerr << "Not able to cast type Integer to typeid: " << target << endl;
+                return false;
+        }
     }
 };
 
