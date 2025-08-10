@@ -116,7 +116,7 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
     }
 
     switch (op) {
-        case TOK_OP_AND:            
+        case TOK_OP_AND:
             returnVal = c.Builder->CreateLogicalAnd(lhsCode, rhsCode, "logicalAnd");
             break;
         case TOK_OP_OR:
@@ -138,9 +138,9 @@ bool BinaryOpNode::eval(Analyser& a) {
     if (!lhsEval || !rhsEval)
         return false;
 
-    switch (op) {    
-        case TOK_OP_AND: case TOK_OP_OR: 
-        case TOK_OP_LT: case TOK_OP_GT: 
+    switch (op) {
+        case TOK_OP_AND: case TOK_OP_OR:
+        case TOK_OP_LT: case TOK_OP_GT:
         case TOK_OP_LE: case TOK_OP_GE:
             if (lhs->evalType != rhs->evalType) {
                 rhs = new CastNode(rhs, lhs->evalType, CastNodeStrategy::getCastStrategy(rhs->evalType));
@@ -167,7 +167,10 @@ bool BinaryOpNode::eval(Analyser& a) {
             }
             break;
         case TOK_OP_LEFTBRA:
-            assert(rhs->evalType == INTEGER);
+            if (rhs->evalType != INTEGER) {
+                rhs = new CastNode(rhs, lhs->evalType, CastNodeStrategy::getCastStrategy(rhs->evalType));
+            }
+
             if (lhs->evalType == INT_POINTER)
                 evalType = INTEGER;
             else

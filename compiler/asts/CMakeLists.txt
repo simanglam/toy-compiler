@@ -1,6 +1,7 @@
 file(GLOB SRC_FILES
     "*.cpp"
     "CastNode/*.cpp"
+    "BinaryOpNode.cpp"
 )
 
 add_library(asts ${SRC_FILES} CastNode)
