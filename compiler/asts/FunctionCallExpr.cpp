@@ -48,3 +48,4 @@ bool FunctionCallExpr::eval(Analyser& a) {
     }
     evalType = a.functionTable[name].returnType;
     return true;
+}

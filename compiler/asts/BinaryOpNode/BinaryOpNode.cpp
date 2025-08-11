@@ -1,7 +1,7 @@
 #include "Compiler.h"
 #include "asts/CastNode.h"
 #include "asts/BinaryOpNode.h"
-#include "asts/VariableNode.h"
+#include "asts/BinaryOpStrategy.h"
 
 Value* castToSameType(Compiler& c, EVALTYPE target, Value* storeValue) {
     switch (target){
@@ -44,91 +44,13 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
     if (!lhsCode || !rhsCode)
         return nullptr;
 
-    Value* returnVal = nullptr;
-    if (lhs->evalType == INTEGER) {
-        switch (op) {
-            case TOK_OP_ADD:
-                return c.Builder->CreateAdd(lhsCode, rhsCode, "addtmp");
-            case TOK_OP_MINUS:
-                return c.Builder->CreateSub(lhsCode, rhsCode, "subtmp");
-            case TOK_OP_TIMES:
-                return c.Builder->CreateMul(lhsCode, rhsCode, "timetmp");
-            case TOK_OP_DIVIDE:
-                return c.Builder->CreateSDiv(lhsCode, rhsCode, "divtmp");
-            case TOK_OP_UNEQUAL:
-                returnVal = c.Builder->CreateICmpNE(lhsCode, rhsCode, "uneqltemp");
-                break;
-            case TOK_OP_EQUAL:
-                returnVal = c.Builder->CreateICmpEQ(lhsCode, rhsCode, "eqltemp");
-                break;
-            case TOK_OP_LE:
-                returnVal = c.Builder->CreateICmpSLE(lhsCode, rhsCode, "leqtemp");
-                break;
-            case TOK_OP_LT:
-                returnVal = c.Builder->CreateICmpSLT(lhsCode, rhsCode, "ltemp");
-                break;
-            case TOK_OP_GE:
-                returnVal = c.Builder->CreateICmpSGE(lhsCode, rhsCode, "geqtemp");
-                break;
-            case TOK_OP_GT:
-                returnVal = c.Builder->CreateICmpSGT(lhsCode, rhsCode, "gttemp");
-                break;
-            default:
-                break;
-        }
-    }
-    if (lhs->evalType == FLOAT) {
-        switch (op){
-            case TOK_OP_ADD:
-                return c.Builder->CreateFAdd(lhsCode, rhsCode, "addtmp");
-            case TOK_OP_MINUS:
-                return c.Builder->CreateFSub(lhsCode, rhsCode, "subtmp");
-            case TOK_OP_TIMES:
-                return c.Builder->CreateFMul(lhsCode, rhsCode, "timetmp");
-            case TOK_OP_DIVIDE:
-                return c.Builder->CreateFDiv(lhsCode, rhsCode, "divtmp");
-            case TOK_OP_UNEQUAL:
-                returnVal = c.Builder->CreateFCmpONE(lhsCode, rhsCode, "uneqltemp");
-                break;
-            case TOK_OP_EQUAL:
-                returnVal = c.Builder->CreateFCmpOEQ(lhsCode, rhsCode, "eqltemp");
-                break;
-            case TOK_OP_LE:
-                returnVal = c.Builder->CreateFCmpOLE(lhsCode, rhsCode, "leqtemp");
-                break;
-            case TOK_OP_LT:
-                returnVal = c.Builder->CreateFCmpOLT(lhsCode, rhsCode, "ltemp");
-                break;
-            case TOK_OP_GE:
-                returnVal = c.Builder->CreateFCmpOGE(lhsCode, rhsCode, "geqtemp");
-                break;
-            case TOK_OP_GT:
-                returnVal = c.Builder->CreateFCmpOGT(lhsCode, rhsCode, "gttemp");
-                break;
-            default:
-                break;
-        }
-    }
-
     if (op == TOK_OP_LEFTBRA) {
         Value* v = c.Builder->CreateGEP(lhsCode->getType(), lhsCode, rhsCode, "array");
         return c.Builder->CreateLoad(c.Builder->getInt32Ty(), v, "arrayElement");
     }
 
-    switch (op) {
-        case TOK_OP_AND:
-            returnVal = c.Builder->CreateLogicalAnd(lhsCode, rhsCode, "logicalAnd");
-            break;
-        case TOK_OP_OR:
-            returnVal = c.Builder->CreateLogicalOr(lhsCode, rhsCode, "logicalAnd");
-            break;
-        case TOK_OP_LEFTBRA:
-            return c.Builder->CreateGEP(lhsCode->getType(), lhsCode, {c.Builder->getInt32(0), rhsCode}, "array");
-            //return c.Builder->CreateExtractElement(c.Builder->CreateGEP(lhsCode->getType(), lhsCode, {c.Builder->getInt32(0), rhs}, "array"), rhsCode, "Element");
-        default:
-            break;
-    }
-    return returnVal;
+    return BinaryOpStrategy::getStrategy(lhs->evalType).codegen(lhsCode, rhsCode, op, c);
+
 }
 
 bool BinaryOpNode::eval(Analyser& a) {
