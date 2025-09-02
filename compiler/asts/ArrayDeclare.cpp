@@ -1,4 +1,4 @@
-#include "asts/ArrayDeclare.h"
+/* #include "asts/ArrayDeclare.h"
 
 #include "Compiler.h"
 #include "Analyser.h"
@@ -49,3 +49,4 @@ bool ArrayDeclare::eval(Analyser& a) {
     a.localSymbolTable[name] = INT_POINTER;
     return true;
 }
+*/

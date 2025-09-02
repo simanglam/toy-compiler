@@ -6,6 +6,11 @@
 #include "asts/FunctionAST.h"
 #include "asts/ErrorExpr.h"
 
+#include "types/TypeInfo.h"
+#include "types/DoubleType.h"
+#include "types/SignedInt32Type.h"
+#include "types/MemoryType.h"
+
 
 Statement* Parser::parseFunction(string name, TOKENS returnType) {
     vector<DeclareNode*> args;
@@ -24,19 +29,27 @@ Statement* Parser::parseFunction(string name, TOKENS returnType) {
 }
 
 DeclareNode* Parser::parseFunctionDeclare() {
-    TOKENS type = s.currentToken.type;
-    if (type == TOK_OP_RIGHTPAR) return nullptr;
-    if (type != TOK_TYPE_INT && type != TOK_TYPE_DOUBLE) {
-        return (DeclareNode *) new ErrorExpr("Unexpect Token: " + s.currentToken.strLiteral);
+    TypeInfo* type = nullptr;
+    switch (s.currentToken.type) {
+        case TOK_TYPE_INT:
+            type = new SignedInt32Type();
+            break;
+        case TOK_TYPE_DOUBLE:
+            type = new DoubleType;
+            break;
+        case TOK_OP_RIGHTPAR:
+            return nullptr;
+        default:
+            return (DeclareNode *) new ErrorExpr("Unexpect Token: " + s.currentToken.strLiteral);
     }
     s.getToken();
     if (s.currentToken.type == TOK_IND) {
-        DeclareNode* node = new DeclareNode(s.currentToken.strLiteral, type);
+        DeclareNode* node = new DeclareNode(type, s.currentToken.strLiteral);
         s.getToken();
         return node;
     }
     else if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
-        return new DeclareNode("", type);
+        return new DeclareNode(type, "");
     }
     return nullptr;
 }

@@ -128,12 +128,7 @@ bool Compiler::writeToFile(outputType outputFileType, string& fileName) {
 }
 
 
-AllocaInst* Compiler::allocateVar(llvm::Type* type, string& name) {
-    IRBuilder<> tempB(&currentFunction->getEntryBlock(), currentFunction->getEntryBlock().begin());
-    return tempB.CreateAlloca(type, nullptr, Twine(name.c_str()));
-}
-
-AllocaInst* Compiler::allocateArray(llvm::Type* type, Value* arraySize, string& name) {
+AllocaInst* Compiler::allocateVar(llvm::Type* type, string& name, Value* arraySize) {
     IRBuilder<> tempB(&currentFunction->getEntryBlock(), currentFunction->getEntryBlock().begin());
     return tempB.CreateAlloca(type, arraySize, Twine(name.c_str()));
 }

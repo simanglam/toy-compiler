@@ -7,6 +7,12 @@
 #include "asts/ReturnStatement.h"
 #include "asts/IfStatement.h"
 #include "asts/ErrorExpr.h"
+#include "asts/DeclareStatement.h"
+
+#include "types/TypeInfo.h"
+#include "types/DoubleType.h"
+#include "types/SignedInt32Type.h"
+#include "types/MemoryType.h"
 
 Statement* Parser::parseReturn() {
     s.getToken();
@@ -57,22 +63,35 @@ Statement* Parser::parseIf() {
 }
 
 Statement* Parser::parseDeclare() {
-    TOKENS type = s.currentToken.type;
-    s.getToken();
-    if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
-        return new DeclareNode("", type);
+    TypeInfo* type = nullptr;
+
+    switch (s.currentToken.type) {
+        case TOK_TYPE_INT:
+            type = new SignedInt32Type();
+            break;
+        case TOK_TYPE_DOUBLE:
+            type = new DoubleType;
+            break;
     }
+
+    s.getToken();
+    DeclareStatement* node = new DeclareStatement();
+    if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
+        return node;
+    }
+
+
 
     string name = s.currentToken.strLiteral;
     s.getToken();
-    Statement* node = nullptr;
 
     if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
-        node = new DeclareNode(name, type, parseExpression());
+        node->pushNode(new DeclareNode(type, name, parseExpression()));
     }
     else if (s.currentToken.type == TOK_OP_LEFTBRA) {
         s.getToken();
+        TypeInfo* baseType = type;
         Expression* arraySizeExpr = nullptr;
         if (s.currentToken.type != TOK_OP_RIGHTPAR)
             arraySizeExpr = parsePrimary();
@@ -85,13 +104,13 @@ Statement* Parser::parseDeclare() {
                 initVals.push_back(parsePrimary());
             } while (s.currentToken.type != TOK_CUR_RIGHT);
             assert(s.getToken().type == TOK_SEMI);
-            node = new ArrayDeclare(type, initVals, arraySizeExpr, name);
+            node->pushNode(new DeclareNode(new MemoryType(baseType, 1), name, nullptr, arraySizeExpr, initVals));
         }
         else
-            node = new ArrayDeclare(type, initVals, arraySizeExpr, name);
+            node->pushNode(new DeclareNode(type, name, nullptr, arraySizeExpr));
     }
     else {
-        node = new DeclareNode(name, type);
+        node->pushNode(new DeclareNode(type, name));
     }
 
     if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR){

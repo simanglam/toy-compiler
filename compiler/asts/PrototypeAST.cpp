@@ -23,19 +23,7 @@ void PrototypeAST::codegen(Compiler& c) {
     vector<llvm::Type*> Args;
 
     for (DeclareNode* node : args) {
-        llvm::Type* type;
-        switch (node->getType()){
-            case TOK_TYPE_INT:
-                type = llvm::Type::getInt32Ty(*c.TheContext);
-                break;
-            case TOK_TYPE_DOUBLE:
-                type = llvm::Type::getDoubleTy(*c.TheContext);
-                break;
-            default:
-                break;
-        }
-
-        Args.push_back(type);
+        Args.push_back(node->getType()->getType(c.TheContext));
     }
 
     llvm::Type* returnType;
@@ -61,20 +49,7 @@ bool PrototypeAST::eval(Analyser& a) {
     EVALTYPE evalType = (returnType == TOK_TYPE_INT) ? INTEGER : FLOAT;
     FunctionInfo f;
     for (DeclareNode* arg : args){
-        EVALTYPE e = UNDIFINED;
-        switch (arg->getType())
-        {
-        case TOK_TYPE_INT:
-            e = INTEGER;
-            break;
-        case TOK_TYPE_DOUBLE:
-            e = FLOAT;
-            break;
-        default:
-            e = UNDIFINED;
-            break;
-        }
-        f.argType.push_back(e);
+        f.argType.push_back(arg->getType()->getEvalType());
     }
     f.returnType = evalType;
     a.functionTable[name] = f;
