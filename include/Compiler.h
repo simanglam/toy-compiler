@@ -26,8 +26,7 @@ public:
     bool compile();
     bool writeToFile(outputType, string&);
 
-    AllocaInst* allocateVar(llvm::Type*, string&);
-    AllocaInst* allocateArray(llvm::Type*, Value* arraySize, string&);
+    AllocaInst* allocateVar(llvm::Type*, string&, Value* = nullptr);
     Compiler(CommandLineOptions&);
     ~Compiler();
 };

@@ -4,19 +4,25 @@
 #include "asts/Expression.h"
 #include "asts/Statement.h"
 #include "Token.h"
+#include "types/TypeInfo.h"
+#include <vector>
 #include <string>
 
-class DeclareNode : public Statement {
-    TOKENS type;
+static vector<Expression*> emptyValue;
+
+class DeclareNode {
+    TypeInfo* type;
     string id;
     Expression* initVal;
+    Expression* size;
+    vector<Expression*>& values;
 public:
-    DeclareNode(string = "", TOKENS = TOK_ERROR, Expression* = nullptr);
+    DeclareNode(TypeInfo*, string = "", Expression* = nullptr, Expression* = nullptr, vector<Expression*>& = emptyValue);
     ~DeclareNode();
-    TOKENS getType();
+    TypeInfo* getType();
     string& getName();
-    void codegen(Compiler&) override;
-    bool eval(Analyser&) override;
+    void codegen(Compiler&);
+    bool eval(Analyser&);
 };
 
 #endif
