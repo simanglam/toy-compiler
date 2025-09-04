@@ -15,7 +15,7 @@ class DeclareNode {
     string id;
     Expression* initVal;
     Expression* size;
-    vector<Expression*>& values;
+    vector<Expression*> values;
 public:
     DeclareNode(TypeInfo*, string = "", Expression* = nullptr, Expression* = nullptr, vector<Expression*>& = emptyValue);
     ~DeclareNode();

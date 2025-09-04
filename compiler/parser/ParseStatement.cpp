@@ -17,6 +17,7 @@
 Statement* Parser::parseReturn() {
     s.getToken();
     Statement* node = new ReturnStatement(parseExpression());
+    assert(s.currentToken.type == TOK_SEMI);
     return node;
 }
 

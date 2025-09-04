@@ -12,8 +12,6 @@ class Parser;
 #include "CommandLineOptions.h"
 #include "Parser.h"
 
-using namespace llvm;
-
 class Compiler {
     CommandLineOptions& options;
 public:
@@ -27,6 +25,7 @@ public:
     bool writeToFile(outputType, string&);
 
     AllocaInst* allocateVar(llvm::Type*, string&, Value* = nullptr);
+    GlobalVariable* allocateGlobalVar(llvm::Type*, string&);
     Compiler(CommandLineOptions&);
     ~Compiler();
 };

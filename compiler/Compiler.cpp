@@ -54,8 +54,7 @@ bool Compiler::compile() {
             ast->codegen(*this);
             delete ast;
         }
-        string outputFileName("output.txt");
-        writeToFile(options.outputFileType, outputFileName);
+        TheModule->print(outs(), nullptr);
         delete TheModule;
         delete Builder;
         delete TheContext;
