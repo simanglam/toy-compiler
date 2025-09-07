@@ -18,3 +18,11 @@ bool DoubleExpr::eval(Analyser& c) {
     evalType = FLOAT;
     return true;
 }
+
+bool DoubleExpr::isConstantExpr() {
+    return true;
+}
+
+double DoubleExpr::getValue() {
+    return val;
+}

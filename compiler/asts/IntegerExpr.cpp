@@ -18,3 +18,11 @@ bool IntegerExpr::eval(Analyser& a) {
     evalType = EVALTYPE::INTEGER;
     return true;
 }
+
+bool IntegerExpr::isConstantExpr() {
+    return true;
+}
+
+double IntegerExpr::getValue() {
+    return val;
+}

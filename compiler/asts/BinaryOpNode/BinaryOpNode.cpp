@@ -3,24 +3,11 @@
 #include "asts/BinaryOpNode.h"
 #include "asts/BinaryOpStrategy.h"
 
-Value* castToSameType(Compiler& c, EVALTYPE target, Value* storeValue) {
-    switch (target){
-        case FLOAT:
-            storeValue = c.Builder->CreateSIToFP(storeValue, Type::getDoubleTy(*c.TheContext), "floatCastTemp");
-            break;
-        case INTEGER:
-            storeValue = c.Builder->CreateFPToSI(storeValue, Type::getInt32Ty(*c.TheContext), "IntCastTemp");
-            break;
-    }
-    return storeValue;
-}
-
 BinaryOpNode::BinaryOpNode(Expression* _lhs, TOKENS _op, Expression* _rhs): lhs(_lhs), op(_op), rhs(_rhs) {}
 
 BinaryOpNode::~BinaryOpNode() {
     delete lhs; delete rhs;
 }
-
 
 Value* BinaryOpNode::codegenExpr(Compiler& c) {
     if (op == TOK_OP_ASSIGN) {
@@ -32,9 +19,6 @@ Value* BinaryOpNode::codegenExpr(Compiler& c) {
         assert(var != nullptr);
         
         Value* storeValue = rhs->codegenExpr(c);
-        if (lhs->evalType != rhs->evalType){
-            storeValue = castToSameType(c, lhs->evalType, storeValue);
-        }
         return c.Builder->CreateStore(storeValue, var);
     }
     
@@ -114,6 +98,26 @@ bool BinaryOpNode::eval(Analyser& a) {
 
 bool BinaryOpNode::isLvalue() {
     return op == TOK_OP_LEFTBRA && lhs->isLvalue();
+}
+
+bool BinaryOpNode::isConstantExpr() {
+    return lhs->isConstantExpr() && rhs->isConstantExpr();
+}
+
+double BinaryOpNode::getValue() {
+    switch (op) {
+        case TOK_OP_ADD:
+            return lhs->getValue() + rhs->getValue();
+        case TOK_OP_DIVIDE:
+            return lhs->getValue() / rhs->getValue();
+        case TOK_OP_MINUS:
+            return lhs->getValue() - rhs->getValue();
+        case TOK_OP_TIMES:
+            return lhs->getValue() * rhs->getValue();
+        default:
+            break;
+    }
+    return -1;
 }
 
 Value* BinaryOpNode::codegenAddr(Compiler& c) {

@@ -10,6 +10,8 @@ public:
     IntegerExpr(int);
     llvm::Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
+    bool isConstantExpr() override;
+    double getValue() override;
 };
 
 class DoubleExpr : public Expression {
@@ -18,6 +20,8 @@ public:
     DoubleExpr(double);
     llvm::Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
+    bool isConstantExpr() override;
+    double getValue() override;
 };
 
 #endif
