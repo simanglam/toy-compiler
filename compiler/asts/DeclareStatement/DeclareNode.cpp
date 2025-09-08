@@ -20,6 +20,14 @@ string& DeclareNode::getName() {
     return id;
 }
 
+Expression* DeclareNode::getInitVal() {
+    return initVal;
+}
+
+vector<Expression*>& DeclareNode::getValues() {
+    return values;
+}
+
 void DeclareNode::codegen(Compiler& c) {
     c.localVariables[id] = c.allocateVar(type->getType(c.TheContext), id);
     if (!size){
