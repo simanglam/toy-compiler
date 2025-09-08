@@ -3,10 +3,10 @@
 
 #include "TypeInfo.h"
 
-class DoubleType : public TypeInfo {
+class DoubleTypeInfo : public TypeInfo {
 public:
-    DoubleType();
-    ~DoubleType();
+    DoubleTypeInfo();
+    ~DoubleTypeInfo();
 
     llvm::Type* getType(llvm::LLVMContext*) override;
     EVALTYPE getEvalType() override;

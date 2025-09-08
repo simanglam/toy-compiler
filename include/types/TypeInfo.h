@@ -6,8 +6,12 @@
 
 #include "EvalType.h"
 
+class DoubleTypeInfo;
+
 class TypeInfo {
 public:
+    DoubleTypeInfo* getType();
+
     TypeInfo();
     virtual ~TypeInfo() = 0;
 

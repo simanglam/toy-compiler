@@ -10,7 +10,7 @@
 #include "asts/DeclareStatement.h"
 
 #include "types/TypeInfo.h"
-#include "types/DoubleType.h"
+#include "types/DoubleTypeInfo.h"
 #include "types/SignedInt32Type.h"
 #include "types/MemoryType.h"
 
@@ -71,7 +71,7 @@ Statement* Parser::parseDeclare() {
             type = new SignedInt32Type();
             break;
         case TOK_TYPE_DOUBLE:
-            type = new DoubleType;
+            type = new DoubleTypeInfo();
             break;
     }
 

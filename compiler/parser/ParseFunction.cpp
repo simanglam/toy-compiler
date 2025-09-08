@@ -7,7 +7,7 @@
 #include "asts/ErrorExpr.h"
 
 #include "types/TypeInfo.h"
-#include "types/DoubleType.h"
+#include "types/DoubleTypeInfo.h"
 #include "types/SignedInt32Type.h"
 #include "types/MemoryType.h"
 
@@ -35,7 +35,7 @@ DeclareNode* Parser::parseFunctionDeclare() {
             type = new SignedInt32Type();
             break;
         case TOK_TYPE_DOUBLE:
-            type = new DoubleType;
+            type = new DoubleTypeInfo();
             break;
         case TOK_OP_RIGHTPAR:
             return nullptr;

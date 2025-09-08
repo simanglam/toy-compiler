@@ -11,6 +11,8 @@ public:
     ~MemoryType();
 
     llvm::Type* getType(llvm::LLVMContext*) override;
+    llvm::Type* getBaseType();
+    int getDepth();
     EVALTYPE getEvalType() override;
 };
 
