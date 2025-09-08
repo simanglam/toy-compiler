@@ -13,6 +13,8 @@ public:
     Value* codegenExpr(Compiler&) override;
     bool eval(Analyser&) override;
     bool isLvalue() override;
+    bool isConstantExpr() override;
+    double getValue() override;
     Value* codegenAddr(Compiler&) override;
 };
 
