@@ -54,6 +54,7 @@ Expression* Parser::parseIndExpression() {
     s.getToken();
     while (s.currentToken.type != TOK_OP_RIGHTPAR) {
         s.getToken();
+        if (s.currentToken.type == TOK_OP_RIGHTPAR) break;
         args.push_back(parseExpression());
     }
     s.getToken();

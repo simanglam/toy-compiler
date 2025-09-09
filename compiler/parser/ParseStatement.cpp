@@ -76,46 +76,41 @@ Statement* Parser::parseDeclare() {
             break;
     }
 
-    s.getToken();
     DeclareStatement* node = new DeclareStatement();
-    if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR) {
-        return node;
-    }
-
-    string name = s.currentToken.strLiteral;
-    s.getToken();
-
-    if (s.currentToken.type == TOK_OP_ASSIGN) {
+    do {
         s.getToken();
-        node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL), parseExpression()));
-    }
-    else if (s.currentToken.type == TOK_OP_LEFTBRA) {
-        s.getToken();
-        TypeInfo* baseType = type;
-        Expression* arraySizeExpr = nullptr;
-        if (s.currentToken.type != TOK_OP_RIGHTPAR)
-            arraySizeExpr = parsePrimary();
 
-        vector<Expression*> initVals;
-        if (s.getToken().type == TOK_OP_ASSIGN) {
-            assert(s.getToken().type == TOK_CUR_LEFT);
-            do{
-                s.getToken();
-                initVals.push_back(parsePrimary());
-            } while (s.currentToken.type != TOK_CUR_RIGHT);
-            assert(s.getToken().type == TOK_SEMI);
-            node->pushNode(new DeclareNode(new MemoryType(baseType, 1), name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL), nullptr, arraySizeExpr, initVals));
+        string name = s.currentToken.strLiteral;
+        s.getToken();
+
+        if (s.currentToken.type == TOK_OP_ASSIGN) {
+            s.getToken();
+            node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL), parseExpression()));
         }
-        else
-            node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL), nullptr, arraySizeExpr));
-    }
-    else {
-        node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL)));
-    }
+        else if (s.currentToken.type == TOK_OP_LEFTBRA) {
+            s.getToken();
+            TypeInfo* baseType = type;
+            Expression* arraySizeExpr = nullptr;
+            if (s.currentToken.type != TOK_OP_RIGHTPAR)
+                arraySizeExpr = parsePrimary();
 
-    if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR){
-        return node;
-    }
+            vector<Expression*> initVals;
+            if (s.getToken().type == TOK_OP_ASSIGN) {
+                assert(s.getToken().type == TOK_CUR_LEFT);
+                do{
+                    s.getToken();
+                    initVals.push_back(parsePrimary());
+                } while (s.currentToken.type != TOK_CUR_RIGHT);
+                assert(s.getToken().type == TOK_SEMI);
+                node->pushNode(new DeclareNode(new MemoryType(baseType, 1), name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL), nullptr, arraySizeExpr, initVals));
+            }
+            else
+                node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL), nullptr, arraySizeExpr));
+        }
+        else {
+            node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL)));
+        }
+    } while (s.currentToken.type == TOK_COMMA);
 
     if (s.currentToken.type != TOK_SEMI) {
         s.getToken();
