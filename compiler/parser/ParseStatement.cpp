@@ -8,6 +8,7 @@
 #include "asts/IfStatement.h"
 #include "asts/ErrorExpr.h"
 #include "asts/DeclareStatement.h"
+#include "asts/DeclareNodeStrategy.h"
 
 #include "types/TypeInfo.h"
 #include "types/DoubleTypeInfo.h"
@@ -88,7 +89,7 @@ Statement* Parser::parseDeclare() {
 
     if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
-        node->pushNode(new DeclareNode(type, name, parseExpression()));
+        node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL), parseExpression()));
     }
     else if (s.currentToken.type == TOK_OP_LEFTBRA) {
         s.getToken();
@@ -105,13 +106,13 @@ Statement* Parser::parseDeclare() {
                 initVals.push_back(parsePrimary());
             } while (s.currentToken.type != TOK_CUR_RIGHT);
             assert(s.getToken().type == TOK_SEMI);
-            node->pushNode(new DeclareNode(new MemoryType(baseType, 1), name, nullptr, arraySizeExpr, initVals));
+            node->pushNode(new DeclareNode(new MemoryType(baseType, 1), name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL), nullptr, arraySizeExpr, initVals));
         }
         else
-            node->pushNode(new DeclareNode(type, name, nullptr, arraySizeExpr));
+            node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL), nullptr, arraySizeExpr));
     }
     else {
-        node->pushNode(new DeclareNode(type, name));
+        node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::LOCAL)));
     }
 
     if (s.currentToken.type == TOK_COMMA || s.currentToken.type == TOK_OP_RIGHTPAR){

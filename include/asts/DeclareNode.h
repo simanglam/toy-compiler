@@ -19,11 +19,12 @@ class DeclareNode {
     vector<Expression*> values;
     DeclareNodeStrategy* strategy;
 public:
-    DeclareNode(TypeInfo*, string = "", Expression* = nullptr, Expression* = nullptr, vector<Expression*>& = emptyValue);
+    DeclareNode(TypeInfo*, string = "", DeclareNodeStrategy* = nullptr, Expression* = nullptr, Expression* = nullptr, vector<Expression*>& = emptyValue);
     ~DeclareNode();
     TypeInfo* getType();
     string& getName();
     Expression* getInitVal();
+    Expression* getSize();
     vector<Expression*>& getValues();
     void codegen(Compiler&);
     bool eval(Analyser&);
