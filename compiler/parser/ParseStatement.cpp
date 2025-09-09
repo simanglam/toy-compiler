@@ -82,8 +82,6 @@ Statement* Parser::parseDeclare() {
         return node;
     }
 
-
-
     string name = s.currentToken.strLiteral;
     s.getToken();
 

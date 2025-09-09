@@ -1,6 +1,7 @@
 
 #include "Parser.h"
 #include "asts/DeclareNode.h"
+#include "asts/DeclareStatement.h"
 #include "asts/GlobalDeclareNode.h"
 #include "asts/PrototypeAST.h"
 #include "asts/FunctionAST.h"
@@ -8,6 +9,11 @@
 #include "asts/IfStatement.h"
 #include "asts/ErrorExpr.h"
 #include "asts/ConstExpr.h"
+
+#include "types/TypeInfo.h"
+#include "types/SignedInt32Type.h"
+#include "types/DoubleTypeInfo.h"
+
 #include <string>
 
 Parser::Parser(Scanner& _s): s(_s) {}
@@ -33,7 +39,18 @@ ASTNode* Parser::parseLine() {
 }
 
 Statement* Parser::parseGlobalDeclare() {
-    TOKENS type = s.currentToken.type;
+    TOKENS token_type = s.currentToken.type;
+    TypeInfo* type = nullptr;
+
+    switch (s.currentToken.type) {
+        case TOK_TYPE_INT:
+            type = new SignedInt32Type();
+            break;
+        case TOK_TYPE_DOUBLE:
+            type = new DoubleTypeInfo();
+            break;
+    }
+    
     if (s.getToken().type != TOK_IND) {
         s.getToken();
         return (Statement*) new ErrorExpr("Expect identifier at line: " + to_string(s.getCurrentLine()) + " but get " + s.currentToken.strLiteral + " instead.");
@@ -41,19 +58,18 @@ Statement* Parser::parseGlobalDeclare() {
 
     string name = s.currentToken.strLiteral;
     s.getToken();
-    Statement* node = nullptr;
+    DeclareStatement* node = new DeclareStatement();
 
     if (s.currentToken.type == TOK_OP_ASSIGN) {
         s.getToken();
-        node = new GlobalDeclareNode(name, type, s.currentToken.intVal, s.currentToken.floatVal);
-        s.getToken();
+        node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::GLOBAL), parseExpression()));
+        
     }
     else if (s.currentToken.type == TOK_SEMI){
-        node = new GlobalDeclareNode(name, type);
+        node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::GLOBAL)));
     }
     else if (s.currentToken.type == TOK_OP_LEFTPAR){
-        node = parseFunction(name, type);
-        return node;
+        return parseFunction(name, token_type);
     }
 
     if (s.currentToken.type != TOK_SEMI) {

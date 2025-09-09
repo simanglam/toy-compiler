@@ -60,11 +60,26 @@ public:
     ~GlobalStrategy() { };
 
     void codegen(Compiler& c, DeclareNode* node) override {
+        if (node->getInitVal() && !node->getInitVal()->isConstantExpr()){
+            cout << "Not const expression" << endl;
+            return ;
+        }
+
+        node->getInitVal()->codegenExpr(c);
+        Constant* constant = nullptr;
+        if (node->getInitVal()){
+            if (node->getType()->getType(c.TheContext)->isIntegerTy())
+                constant = ConstantInt::get(node->getType()->getType(c.TheContext), node->getInitVal()->getValue(), true);
+            else 
+                constant = ConstantFP::get(node->getType()->getType(c.TheContext), node->getInitVal()->getValue());
+        }
+        
         c.globalVar[node->getName()] = new llvm::GlobalVariable(
+            *c.TheModule,
             node->getType()->getType(c.TheContext),
             false,
             llvm::GlobalValue::LinkageTypes::ExternalLinkage,
-            nullptr,
+            constant,
             node->getName()
         );
     }
