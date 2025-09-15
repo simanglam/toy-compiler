@@ -4,7 +4,7 @@
 #include "Compiler.h"
 #include "Analyser.h"
 
-PrototypeAST::PrototypeAST(string _name, vector<DeclareNode*> _args, TOKENS _returnType): name(_name), args(_args), returnType(_returnType) {}
+PrototypeAST::PrototypeAST(string _name, vector<DeclareNode*> _args, TypeInfo* _returnType): name(_name), args(_args), returnType(_returnType) {}
 
 PrototypeAST::~PrototypeAST() {
     for (DeclareNode* node : args)
@@ -23,21 +23,11 @@ void PrototypeAST::codegen(Compiler& c) {
     vector<llvm::Type*> Args;
 
     for (DeclareNode* node : args) {
-        Args.push_back(node->getType()->getType(c.TheContext));
+        Args.push_back(node->getType()->toLLVMType(c.TheContext));
     }
 
-    llvm::Type* returnType;
-    switch (this->returnType) {
-        case TOK_TYPE_INT:
-            returnType = llvm::Type::getInt32Ty(*c.TheContext);
-            break;
-        case TOK_TYPE_DOUBLE:
-            returnType = llvm::Type::getDoubleTy(*c.TheContext);
-           break;
-        default: break;
-    }
 
-    FunctionType* FT = FunctionType::get(returnType, Args, false);
+    FunctionType* FT = FunctionType::get(returnType->toLLVMType(c.TheContext), Args, false);
     Function* F = Function::Create(FT, GlobalValue::ExternalLinkage, llvm::Twine(name), c.TheModule);
 }
 
@@ -46,7 +36,7 @@ bool PrototypeAST::eval(Analyser& a) {
         cerr << "You can't redifined the function: " << name << endl;
         return false;
     }
-    EVALTYPE evalType = (returnType == TOK_TYPE_INT) ? INTEGER : FLOAT;
+    EVALTYPE evalType = returnType->getEvalType();
     FunctionInfo f;
     for (DeclareNode* arg : args){
         f.argType.push_back(arg->getType()->getEvalType());

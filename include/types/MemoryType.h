@@ -10,7 +10,7 @@ public:
     MemoryType(TypeInfo*, int);
     ~MemoryType();
 
-    llvm::Type* getType(llvm::LLVMContext*) override;
+    llvm::Type* toLLVMType(llvm::LLVMContext*) override;
     llvm::Type* getBaseType();
     int getDepth();
     EVALTYPE getEvalType() override;

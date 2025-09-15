@@ -3,6 +3,7 @@
 
 #include "Token.h" 
 #include "Scanner.h"
+#include "types/TypeInfo.h"
 
 class Expression;
 class DeclareNode;
@@ -24,7 +25,7 @@ private:
     Expression* parseBinOpRhs(int, Expression*);
     BlockNode* parseBlock();
     Statement* parseReturn();
-    Statement* parseFunction(string, TOKENS);
+    Statement* parseFunction(string, TypeInfo*);
     Statement* parseGlobalDeclare();
     Statement* parseDeclare();
     DeclareNode* parseFunctionDeclare();

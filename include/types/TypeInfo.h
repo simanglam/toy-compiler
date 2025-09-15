@@ -6,16 +6,13 @@
 
 #include "EvalType.h"
 
-class DoubleTypeInfo;
-
 class TypeInfo {
 public:
-    DoubleTypeInfo* getType();
 
     TypeInfo();
     virtual ~TypeInfo() = 0;
 
-    virtual llvm::Type* getType(llvm::LLVMContext*) = 0;
+    virtual llvm::Type* toLLVMType(llvm::LLVMContext*) = 0;
     virtual EVALTYPE getEvalType() = 0;
 };
 

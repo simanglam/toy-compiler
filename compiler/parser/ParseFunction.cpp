@@ -12,7 +12,7 @@
 #include "types/MemoryType.h"
 
 
-Statement* Parser::parseFunction(string name, TOKENS returnType) {
+Statement* Parser::parseFunction(string name, TypeInfo* returnType) {
     vector<DeclareNode*> args;
     while (s.currentToken.type != TOK_OP_RIGHTPAR){
         s.getToken();

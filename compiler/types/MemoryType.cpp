@@ -9,8 +9,8 @@ MemoryType::MemoryType(TypeInfo* _baseType, int _depth): baseType(_baseType), de
 MemoryType::~MemoryType() {
 }
 
-llvm::Type* MemoryType::getType(llvm::LLVMContext* c){
-    return (llvm::Type*)baseType->getType(c)->getPointerTo();
+llvm::Type* MemoryType::toLLVMType(llvm::LLVMContext* c){
+    return (llvm::Type*)baseType->toLLVMType(c)->getPointerTo();
 }
 
 EVALTYPE MemoryType::getEvalType() {

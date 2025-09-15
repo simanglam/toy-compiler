@@ -8,7 +8,7 @@ public:
     SignedInt32Type();
     ~SignedInt32Type();
 
-    llvm::Type* getType(llvm::LLVMContext*) override;
+    llvm::Type* toLLVMType(llvm::LLVMContext*) override;
     EVALTYPE getEvalType() override;
 };
 

@@ -69,7 +69,7 @@ Statement* Parser::parseGlobalDeclare() {
         node->pushNode(new DeclareNode(type, name, DeclareNodeStrategy::getStrategy(DeclareType::GLOBAL)));
     }
     else if (s.currentToken.type == TOK_OP_LEFTPAR){
-        return parseFunction(name, token_type);
+        return parseFunction(name, type);
     }
 
     if (s.currentToken.type != TOK_SEMI) {

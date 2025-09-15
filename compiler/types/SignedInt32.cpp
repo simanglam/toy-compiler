@@ -12,7 +12,7 @@ SignedInt32Type::~SignedInt32Type() {
 
 }
 
-Type* SignedInt32Type::getType(LLVMContext* c) {
+Type* SignedInt32Type::toLLVMType(LLVMContext* c) {
     return (Type*)Type::getInt32Ty(*c);
 }
 

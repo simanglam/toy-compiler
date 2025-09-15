@@ -8,7 +8,7 @@ public:
     DoubleTypeInfo();
     ~DoubleTypeInfo();
 
-    llvm::Type* getType(llvm::LLVMContext*) override;
+    llvm::Type* toLLVMType(llvm::LLVMContext*) override;
     EVALTYPE getEvalType() override;
 };
 

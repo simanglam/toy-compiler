@@ -8,7 +8,7 @@ DoubleTypeInfo::DoubleTypeInfo() {}
 
 DoubleTypeInfo::~DoubleTypeInfo() {}
 
-Type* DoubleTypeInfo::getType(LLVMContext* c) {
+Type* DoubleTypeInfo::toLLVMType(LLVMContext* c) {
     return Type::getDoubleTy(*c);
 } 
 
