@@ -14,6 +14,10 @@ public:
 
     virtual llvm::Type* toLLVMType(llvm::LLVMContext*) = 0;
     virtual EVALTYPE getEvalType() = 0;
+
+    static TypeInfo* getDoubleType();
+    static TypeInfo* getMemoryType(TypeInfo*);
+    static TypeInfo* getIntType();
 };
 
 

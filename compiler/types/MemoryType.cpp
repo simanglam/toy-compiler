@@ -2,7 +2,7 @@
 
 #include "types/MemoryType.h"
 
-MemoryType::MemoryType(TypeInfo* _baseType, int _depth): baseType(_baseType), depth(_depth) {
+MemoryType::MemoryType(TypeInfo* _baseType): baseType(_baseType) {
 
 }
 

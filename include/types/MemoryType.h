@@ -7,7 +7,7 @@ class MemoryType : public TypeInfo {
     TypeInfo* baseType;
     int depth;
 public:
-    MemoryType(TypeInfo*, int);
+    MemoryType(TypeInfo*);
     ~MemoryType();
 
     llvm::Type* toLLVMType(llvm::LLVMContext*) override;
